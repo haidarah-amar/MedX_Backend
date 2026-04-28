@@ -38,6 +38,10 @@ return [
     'guards' => [
         'api' => [
             'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+        'clinic-api' => [
+            'driver' => 'jwt',
             'provider' => 'clinics',
         ],
     ],
@@ -60,11 +64,15 @@ return [
     */
 
     'providers' => [
-    'clinics' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\Clinic::class,
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+        'clinics' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Clinic::class,
+        ],
     ],
-],
 
 
         // 'users' => [

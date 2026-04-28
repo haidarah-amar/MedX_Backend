@@ -37,28 +37,28 @@ class ClinicController extends Controller
 }
 
     public function login(LoginRequest $request)
-{
-    $credentials = $request->only('email', 'password');
+    {
+        $credentials = $request->only('email', 'password');
 
-    if (!$token = JWTAuth::attempt($credentials)) {
-        return response()->json(['error' => 'Unauthorized'], 401);
-    }
+        if (!$token = auth('clinic-api')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-    $user = JWTAuth::user();
+        $user = auth('clinic-api')->user();
 
-    if (!$user->is_approved) {
-        JWTAuth::invalidate($token);
+        if (!$user->is_approved) {
+            auth('clinic-api')->logout();
+
+            return response()->json([
+                'error' => 'لم يتم تفعيل حسابك من قبل الحكومة بعد، سيتم ابلاغكم فور تفعيله عبر الايميل المدخل في حسابكم'
+            ], 403);
+        }
 
         return response()->json([
-            'error' => 'لم يتم تفعيل حسابك من قبل الحكومة بعد، سيتم ابلاغكم فور تفعيله عبر الايميل المدخل في حسابكم'
-        ], 403);
+            'token' => $token,
+            'clinic' => $user
+        ], 200);
     }
-
-    return response()->json([
-        'token' => $token,
-        'clinic' => $user
-    ], 200);
-}
 
 
   public function logout(Request $request)
@@ -80,14 +80,14 @@ class ClinicController extends Controller
 
 public function show()
 {
-    return response()->json(auth('api')->user());
+    return response()->json(auth('clinic-api')->user());
 }
 
 
 public function update(UpdateClinicRequest $request)
 {
-    $clinic = auth('api')->user();
-    
+    $clinic = auth('clinic-api')->user();
+
     if ($request->password) {
     $clinic->password = bcrypt($request->password);
     }
@@ -103,7 +103,7 @@ public function update(UpdateClinicRequest $request)
 
 public function activate()
 {
-    $clinic = auth('api')->user();
+    $clinic = auth('clinic-api')->user();
 
     $clinic->is_active = ! $clinic->is_active;
     $clinic->save();
@@ -121,7 +121,7 @@ public function uploadImage(Request $request)
         'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
     ]);
 
-    $clinic = auth('api')->user();
+    $clinic = auth('clinic-api')->user();
 
     $uploadedImages = [];
 
