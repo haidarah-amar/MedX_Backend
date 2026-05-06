@@ -2,144 +2,116 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\ClinicContract;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreClinicRequest;
 use App\Http\Requests\UpdateClinicRequest;
-use App\Models\Clinic;
-use App\Models\ClinicImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+
 class ClinicController extends Controller
 {
+    protected $clinicRepository;
+
+    public function __construct(ClinicContract $clinicRepository)
+    {
+        $this->clinicRepository = $clinicRepository;
+    }
 
     public function store(StoreClinicRequest $request)
-{
-    $data = $request->validated();
+    {
+        $clinic = $this->clinicRepository
+            ->createClinic($request->validated());
 
-    if ($request->hasFile('owner_idphoto')) {
-    $data['owner_idphoto'] = $request->file('owner_idphoto')->store('owners', 'public');
+        return response()->json([
+            'message' => 'تم تسجيل العيادة بنجاح',
+            'clinic' => $clinic
+        ], 201);
     }
-
-    if ($request->hasFile('logo')) {
-    $data['logo'] = $request->file('logo')->store('clinics', 'public');
-    }
-
-    $clinic = Clinic::create([
-        ...$data,
-        'password' => bcrypt($request->password)
-    ]);
-
-    return response()->json([
-        'message' => 'تم تسجيل العيادة بنجاح، سيتم ابلاغكم عبر الايميل المدخل في حسابكم فور تفعيل حسابكم من قبل الحكومة',
-        'clinic' => $clinic
-    ], 201);
-}
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
+        $result = $this->clinicRepository
+            ->login($request->only('email', 'password'));
 
-        if (!$token = auth('clinic-api')->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if ($result === null) {
+            return response()->json([
+                'error' => 'Unauthorized'
+            ], 401);
         }
 
-        $user = auth('clinic-api')->user();
-
-        if (!$user->is_approved) {
-            auth('clinic-api')->logout();
-
+        if ($result === false) {
             return response()->json([
-                'error' => 'لم يتم تفعيل حسابك من قبل الحكومة بعد، سيتم ابلاغكم فور تفعيله عبر الايميل المدخل في حسابكم'
+                'error' => 'لم يتم تفعيل الحساب بعد'
             ], 403);
         }
 
+        return response()->json($result);
+    }
+
+    public function logout()
+    {
+        $logout = $this->clinicRepository->logout();
+
+        if (!$logout) {
+            return response()->json([
+                'message' => 'Token not found'
+            ], 400);
+        }
+
         return response()->json([
-            'token' => $token,
-            'clinic' => $user
-        ], 200);
-    }
-
-
-  public function logout(Request $request)
-{
-    $token = JWTAuth::getToken();
-
-    if (!$token) {
-        return response()->json(['message' => 'Token not found'], 400);
-    }
-
-    JWTAuth::invalidate($token);
-
-    return response()->json([
-        'message' => 'تم تسجيل الخروج بنجاح'
-    ]);
-}
-
-
-
-public function show()
-{
-    return response()->json(auth('clinic-api')->user());
-}
-
-
-public function update(UpdateClinicRequest $request)
-{
-    $clinic = auth('clinic-api')->user();
-
-    if ($request->password) {
-    $clinic->password = bcrypt($request->password);
-    }
-
-    if ($request->hasFile('owner_idphoto')) {
-    $clinic['owner_idphoto'] = $request->file('owner_idphoto')->update('owners', 'public');
-    }
-
-    $clinic->update($request->validated());
-
-    return response()->json(['message' => 'تم تحديث بيانات العيادة بنجاح', 'clinic' => $clinic] , 200);
-}
-
-public function activate()
-{
-    $clinic = auth('clinic-api')->user();
-
-    $clinic->is_active = ! $clinic->is_active;
-    $clinic->save();
-
-    return response()->json([
-        'message' => 'تم تحديث حالة العيادة بنجاح',
-        'is_active' => $clinic->is_active
-    ]);
-}
-
-public function uploadImage(Request $request)
-{
-     $request->validate([
-        'images' => 'required',
-        'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-    ]);
-
-    $clinic = auth('clinic-api')->user();
-
-    $uploadedImages = [];
-
-    foreach ($request->file('images') as $image) {
-        $path = $image->store('clinics', 'public');
-
-        $uploadedImages[] = ClinicImage::create([
-            'clinic_id' => $clinic->id,
-            'image_path' => $path,
+            'message' => 'تم تسجيل الخروج بنجاح'
         ]);
     }
 
-    return response()->json([
-        'message' => 'تمت اضافة الصور بنجاح',
-        'data' => $uploadedImages
-    ]);
-}
+    public function show()
+    {
+        return response()->json(
+            $this->clinicRepository
+                ->getAuthenticatedClinic()
+        );
+    }
 
+    public function update(UpdateClinicRequest $request)
+    {
+        $clinic = auth('clinic-api')->user();
 
+        $updatedClinic = $this->clinicRepository
+            ->updateClinic($clinic->id, $request->validated());
 
+        return response()->json([
+            'message' => 'تم تحديث بيانات العيادة بنجاح',
+            'clinic' => $updatedClinic
+        ]);
+    }
+
+    public function activate()
+    {
+        $clinic = auth('clinic-api')->user();
+
+        $updatedClinic = $this->clinicRepository
+            ->activateClinic($clinic->id);
+
+        return response()->json([
+            'message' => 'تم تحديث حالة العيادة بنجاح',
+            'is_active' => $updatedClinic->is_active
+        ]);
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'images' => 'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $clinic = auth('clinic-api')->user();
+
+        $images = $this->clinicRepository
+            ->uploadImages($clinic->id, $request->file('images'));
+
+        return response()->json([
+            'message' => 'تمت اضافة الصور بنجاح',
+            'data' => $images
+        ]);
+    }
 }

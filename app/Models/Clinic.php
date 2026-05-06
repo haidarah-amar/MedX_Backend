@@ -21,7 +21,20 @@ class Clinic extends Authenticatable implements JWTSubject
         return [];
     }
      public function images()
-{
+    {
     return $this->hasMany(ClinicImage::class, 'clinic_id');
-}
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(Department::class, 'clinic_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class ,'clinic_id');
+    }
+
+
+
 }
