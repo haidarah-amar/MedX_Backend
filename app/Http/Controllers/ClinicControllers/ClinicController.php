@@ -2,25 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\ClinicContract;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreClinicRequest;
 use App\Http\Requests\UpdateClinicRequest;
+use App\Services\Contracts\ClinicServiceInterface;
 use Illuminate\Http\Request;
 
 class ClinicController extends Controller
 {
-    protected $clinicRepository;
-
-    public function __construct(ClinicContract $clinicRepository)
-    {
-        $this->clinicRepository = $clinicRepository;
-    }
+    public function __construct(
+        protected ClinicServiceInterface $clinicService
+    ) {}
 
     public function store(StoreClinicRequest $request)
     {
-        $clinic = $this->clinicRepository
-            ->createClinic($request->validated());
+        $clinic = $this->clinicService
+            ->register($request->validated());
 
         return response()->json([
             'message' => 'تم تسجيل العيادة بنجاح',
@@ -30,7 +27,7 @@ class ClinicController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $result = $this->clinicRepository
+        $result = $this->clinicService
             ->login($request->only('email', 'password'));
 
         if ($result === null) {
@@ -50,7 +47,7 @@ class ClinicController extends Controller
 
     public function logout()
     {
-        $logout = $this->clinicRepository->logout();
+        $logout = $this->clinicService->logout();
 
         if (!$logout) {
             return response()->json([
@@ -66,7 +63,7 @@ class ClinicController extends Controller
     public function show()
     {
         return response()->json(
-            $this->clinicRepository
+            $this->clinicService
                 ->getAuthenticatedClinic()
         );
     }
@@ -75,8 +72,8 @@ class ClinicController extends Controller
     {
         $clinic = auth('clinic-api')->user();
 
-        $updatedClinic = $this->clinicRepository
-            ->updateClinic($clinic->id, $request->validated());
+        $updatedClinic = $this->clinicService
+            ->update($clinic->id, $request->validated());
 
         return response()->json([
             'message' => 'تم تحديث بيانات العيادة بنجاح',
@@ -88,8 +85,8 @@ class ClinicController extends Controller
     {
         $clinic = auth('clinic-api')->user();
 
-        $updatedClinic = $this->clinicRepository
-            ->activateClinic($clinic->id);
+        $updatedClinic = $this->clinicService
+            ->activate($clinic->id);
 
         return response()->json([
             'message' => 'تم تحديث حالة العيادة بنجاح',
@@ -106,8 +103,11 @@ class ClinicController extends Controller
 
         $clinic = auth('clinic-api')->user();
 
-        $images = $this->clinicRepository
-            ->uploadImages($clinic->id, $request->file('images'));
+        $images = $this->clinicService
+            ->uploadImages(
+                $clinic->id,
+                $request->file('images')
+            );
 
         return response()->json([
             'message' => 'تمت اضافة الصور بنجاح',

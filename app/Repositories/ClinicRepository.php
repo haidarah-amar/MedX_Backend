@@ -2,59 +2,44 @@
 
 namespace App\Repositories;
 
-use App\Contracts\ClinicContract;
 use App\Models\Clinic;
 use App\Models\ClinicImage;
+use App\Repositories\Contracts\ClinicRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\JWTGuard;
 
-class ClinicRepository implements ClinicContract
+class ClinicRepository implements ClinicRepositoryInterface
 {
-    
-    public function getClinicById($id)
+    public function findById(int $id)
     {
         return Clinic::findOrFail($id);
     }
 
-    public function getAllClinics()
+    public function findByEmail(string $email)
+    {
+        return Clinic::findOrFail('email', $email)->first();
+    }
+
+    public function all()
     {
         return Clinic::all();
     }
 
-    public function createClinic(array $data)
+    public function create(array $data)
     {
-        if (isset($data['owner_idphoto'])) {
-            $data['owner_idphoto'] = $data['owner_idphoto']
-                ->store('owners', 'public');
-        }
-
-        if (isset($data['logo'])) {
-            $data['logo'] = $data['logo']
-                ->store('clinics', 'public');
-        }
-
-        $data['password'] = bcrypt($data['password']);
-
-        return Clinic::create($data);
-    }
-
-    public function updateClinic($id, array $data)
-    {
-        $clinic = $this->getClinicById($id);
-
         if (isset($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         }
 
-        if (isset($data['owner_idphoto'])) {
-            $data['owner_idphoto'] = $data['owner_idphoto']
-                ->store('owners', 'public');
-        }
+        return Clinic::create($data);
+    }
 
-        if (isset($data['logo'])) {
-            $data['logo'] = $data['logo']
-                ->store('clinics', 'public');
+    public function update(int $id, array $data)
+    {
+        $clinic = $this->findById($id);
+
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
         }
 
         $clinic->update($data);
@@ -62,21 +47,16 @@ class ClinicRepository implements ClinicContract
         return $clinic;
     }
 
-    public function deleteClinic($id)
+    public function delete(int $id)
     {
-        $clinic = $this->getClinicById($id);
-
-        return $clinic->delete();
+        return $this->findById($id)->delete();
     }
 
-    public function login(array $credentials)
+ public function login(array $credentials)
 {
-    $clinic = Clinic::where('email', $credentials['email'])->first();
+    $clinic = Clinic::findOrFail('email', $credentials['email'])->first();
 
-    if (
-        !$clinic ||
-        !Hash::check($credentials['password'], $clinic->password)
-    ) {
+    if (!$clinic || !Hash::check($credentials['password'], $clinic->password)) {
         return null;
     }
 
@@ -87,8 +67,8 @@ class ClinicRepository implements ClinicContract
     $token = JWTAuth::fromUser($clinic);
 
     return [
-        'clinic' => $clinic,
         'token' => $token,
+        'clinic' => $clinic
     ];
 }
 
@@ -110,9 +90,9 @@ class ClinicRepository implements ClinicContract
         return auth('clinic-api')->user();
     }
 
-    public function activateClinic($id)
+    public function activateClinic(int $id)
     {
-        $clinic = $this->getClinicById($id);
+        $clinic = $this->findById($id);
 
         $clinic->is_active = !$clinic->is_active;
 
@@ -121,12 +101,11 @@ class ClinicRepository implements ClinicContract
         return $clinic;
     }
 
-    public function uploadImages($clinicId, $images)
+    public function uploadImages(int $clinicId, array $images)
     {
         $uploadedImages = [];
 
         foreach ($images as $image) {
-
             $path = $image->store('clinics', 'public');
 
             $uploadedImages[] = ClinicImage::create([
