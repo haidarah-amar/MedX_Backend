@@ -54,7 +54,7 @@ class ClinicRepository implements ClinicRepositoryInterface
 
  public function login(array $credentials)
 {
-    $clinic = Clinic::findOrFail('email', $credentials['email'])->first();
+    $clinic = Clinic::whereEmail($credentials['email'])->first();
 
     if (!$clinic || !Hash::check($credentials['password'], $clinic->password)) {
         return null;

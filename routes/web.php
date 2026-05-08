@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\ClinicControllers\ClinicController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('clinics')->group(function () {

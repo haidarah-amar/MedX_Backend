@@ -5,8 +5,12 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\ClinicRepository;
 use App\Repositories\Contracts\ClinicRepositoryInterface;
+use App\Repositories\DepartmentRepository;
+use App\Repositories\Contracts\DepartmentRepositoryInterface;
 use App\Services\ClinicService;
 use App\Services\Contracts\ClinicServiceInterface;
+use App\Services\DepartmentService;
+use App\Services\Contracts\DepartmentServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Clinic Bindings
         $this->app->bind(
             ClinicRepositoryInterface::class,
             ClinicRepository::class
@@ -23,6 +28,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ClinicServiceInterface::class,
             ClinicService::class
+        );
+
+        // Department Bindings
+        $this->app->bind(
+            DepartmentRepositoryInterface::class,
+            DepartmentRepository::class
+        );
+
+        $this->app->bind(
+            DepartmentServiceInterface::class,
+            DepartmentService::class
         );
     }
 
