@@ -3,14 +3,24 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+
+// Clinic
 use App\Repositories\ClinicRepository;
 use App\Repositories\Contracts\ClinicRepositoryInterface;
-use App\Repositories\DepartmentRepository;
-use App\Repositories\Contracts\DepartmentRepositoryInterface;
 use App\Services\ClinicService;
 use App\Services\Contracts\ClinicServiceInterface;
+
+// Department
+use App\Repositories\DepartmentRepository;
+use App\Repositories\Contracts\DepartmentRepositoryInterface;
 use App\Services\DepartmentService;
 use App\Services\Contracts\DepartmentServiceInterface;
+
+// User
+use App\Repositories\UserRepository;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Services\UserService;
+use App\Services\Contracts\UserServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +49,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DepartmentServiceInterface::class,
             DepartmentService::class
+        );
+
+        // User Bindings
+        $this->app->bind(
+            UserRepositoryInterface::class,
+            UserRepository::class
+        );
+
+        $this->app->bind(
+            UserServiceInterface::class,
+            UserService::class
         );
     }
 

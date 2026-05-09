@@ -1,72 +1,77 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\UserControllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdateProfileRequest;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Services\Contracts\UserServiceInterface;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected UserServiceInterface $userService
+    ) {
+    }
+
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
+        $user = $this->userService->register($request->validated());
 
-        $user = User::create($data);
-        $token = JWTAuth::fromUser($user);
+        $result = $this->userService->login($request->only('email', 'password'));
 
         return response()->json([
-            'user' => $user,
-            'token' => $token,
+            'message' => 'تم تسجيل المستخدم بنجاح',
+            'user' => $result['user'],
+            'token' => $result['token'],
         ], 201);
     }
 
     public function login(LoginRequest $request)
     {
-        $request->validated();
+        $result = $this->userService->login($request->only('email', 'password'));
 
-        $user = User::findOrFail('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if ($result === null) {
+            return response()->json([
+                'error' => 'بيانات غير صحيحة',
+            ], 401);
         }
 
-        $token = JWTAuth::fromUser($user);
+        return response()->json($result);
+    }
+
+    public function logout()
+    {
+        $logout = $this->userService->logout();
+
+        if (!$logout) {
+            return response()->json([
+                'message' => 'Token not found',
+            ], 400);
+        }
 
         return response()->json([
-            'user' => $user,
-            'token' => $token,
+            'message' => 'تم تسجيل الخروج بنجاح',
         ]);
     }
 
-    public function logout(Request $request)
+    public function profile()
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
-
-        return response()->json(['message' => 'Logged out successfully.']);
-    }
-
-    public function profile(Request $request)
-    {
-        return response()->json($request->user());
+        return response()->json(
+            $this->userService->getAuthenticatedUser()
+        );
     }
 
     public function updateProfile(UpdateProfileRequest $request)
     {
-        $user = $request->user();
+        $user = auth('api')->user();
 
-        $data = $request->validated();
+        $updatedUser = $this->userService->updateProfile($user->id, $request->validated());
 
-        $user->update($data);
-
-        return response()->json($user);
+        return response()->json([
+            'message' => 'تم تحديث الملف الشخصي بنجاح',
+            'user' => $updatedUser,
+        ]);
     }
 }

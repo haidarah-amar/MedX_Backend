@@ -3,21 +3,21 @@
 use App\Http\Controllers\ClinicControllers\ClinicController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserControllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 
 // User Auth
 Route::prefix('auth')->group(function () {
-Route::post('register', [AuthController::class, 'register']);
+    Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 });
 
 Route::prefix('profile')->middleware('auth:api')->group(function () {
 
     // Auth
-    Route::post('logout',         [AuthController::class, 'logout']);
-    Route::get('/',         [AuthController::class, 'profile']);
-    Route::post('/update',         [AuthController::class, 'updateProfile']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('/', [AuthController::class, 'profile']);
+    Route::post('/update', [AuthController::class, 'updateProfile']);
 });
 
 Route::prefix('clinics/management')->group(function () {
