@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('departments_doctors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
+            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
+    
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('departments_doctors');

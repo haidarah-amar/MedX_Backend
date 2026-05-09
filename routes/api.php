@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
+use App\Http\Controllers\ClinicControllers\DoctorController;
 
 // User Auth
 Route::prefix('auth')->group(function () {
@@ -39,6 +40,19 @@ Route::prefix('clinics/departments')->controller(DepartmentController::class)->g
 
     Route::get('/', 'index');
     Route::post('/', 'store');
+    Route::get('/{id}', 'show');
+    Route::post('/{id}', 'update');
+    Route::delete('/{id}', 'destroy');
+});
+
+Route::prefix('clinics/doctors')->controller(DoctorController::class)->group(function () {
+
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::get('/serial/{serial}', 'findBySerial');
+    Route::get('/contracted', 'clinicDoctors');
+    Route::post('/contract', 'contract');
+    Route::post('/uncontract', 'uncontract');
     Route::get('/{id}', 'show');
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');

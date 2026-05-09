@@ -8,7 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Clinic extends Authenticatable implements JWTSubject
 {
-
     protected $guarded = [];
 
     public function getJWTIdentifier()
@@ -20,9 +19,10 @@ class Clinic extends Authenticatable implements JWTSubject
     {
         return [];
     }
-     public function images()
+
+    public function images()
     {
-    return $this->hasMany(ClinicImage::class, 'clinic_id');
+        return $this->hasMany(ClinicImage::class, 'clinic_id');
     }
 
     public function departments()
@@ -32,9 +32,16 @@ class Clinic extends Authenticatable implements JWTSubject
 
     public function documents()
     {
-        return $this->hasMany(Document::class ,'clinic_id');
+        return $this->hasMany(Document::class, 'clinic_id');
     }
 
-
-
+    public function doctors()
+    {
+        return $this->belongsToMany(
+            Doctor::class,
+            'clinic_doctor',
+            'clinic_id',
+            'doctor_id'
+        )->withPivot('department_id')->withTimestamps();
+    }
 }
