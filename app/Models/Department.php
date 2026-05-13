@@ -18,10 +18,15 @@ class Department extends Model
     // }
 
     public function doctors()
-{
-    return $this->belongsToMany(
-        Doctor::class,
-        'departments_doctors'
-    )->withPivot('clinic_id')->withTimestamps();
-}
+    {
+        return $this->belongsToMany(
+            Doctor::class,
+            'departments_doctors'
+        )->withPivot('clinic_id')->withTimestamps();
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'dep_id');
+    }
 }

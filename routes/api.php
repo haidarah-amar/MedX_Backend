@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserControllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
+use App\Http\Controllers\UserControllers\AppointmentController; 
 
 // User Auth
 Route::prefix('auth')->group(function () {
@@ -19,6 +20,13 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('/', [AuthController::class, 'profile']);
     Route::post('/update', [AuthController::class, 'updateProfile']);
+
+
+    // Appointments
+    Route::get('appointments', [AppointmentController::class, 'index']);
+    Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
+    Route::post('appointments', [AppointmentController::class, 'store']);
+    Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
 });
 
 Route::prefix('clinics/management')->group(function () {

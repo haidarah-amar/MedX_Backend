@@ -33,12 +33,17 @@ class Doctor extends Model
     // }
 
     public function departments()
-{
-    return $this->belongsToMany(
-        Department::class,
-        'departments_doctors'
-    )->withPivot('clinic_id')->withTimestamps();
-}
+    {
+        return $this->belongsToMany(
+            Department::class,
+            'departments_doctors'
+        )->withPivot('clinic_id')->withTimestamps();
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 
     protected static function boot()
     {
