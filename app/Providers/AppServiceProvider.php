@@ -22,6 +22,12 @@ use App\Repositories\Contracts\DoctorRepositoryInterface;
 use App\Services\DoctorService;
 use App\Services\Contracts\DoctorServiceInterface;
 
+// Appointment
+use App\Repositories\AppointmentRepository;
+use App\Repositories\Contracts\AppointmentRepositoryInterface;
+use App\Services\AppointmentService;
+use App\Services\Contracts\AppointmentServiceInterface;
+
 // User
 use App\Repositories\UserRepository;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -66,6 +72,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DoctorServiceInterface::class,
             DoctorService::class
+        );
+
+        // Appointment Bindings
+        $this->app->bind(
+            AppointmentRepositoryInterface::class,
+            AppointmentRepository::class
+        );
+
+        $this->app->bind(
+            AppointmentServiceInterface::class,
+            AppointmentService::class
         );
 
         // User Bindings

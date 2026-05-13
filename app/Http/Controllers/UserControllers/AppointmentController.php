@@ -1,54 +1,46 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\UserControllers;
 
-use App\Models\Appointment;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
+use App\Models\Appointment;
+use App\Services\Contracts\AppointmentServiceInterface;
+use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    public function __construct(
+        protected AppointmentServiceInterface $appointmentService
+    ) {}
+
     public function index(Request $request)
     {
-        $query = $request->user()
-            ->appointments()
-            ->with(['doctor', 'department.clinic']);
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        return response()->json($query->orderByDesc('date')->paginate(15));
+        return response()->json(
+            $this->appointmentService->getUserAppointments($request->user(), $request->status)
+        );
     }
 
-    public function show(Appointment $appointment)
+    public function show(Request $request, Appointment $appointment)
     {
-        $this->authorizeUser($appointment);
-        $appointment->load(['doctor', 'department.clinic']);
-        return response()->json($appointment);
+        return response()->json(
+            $this->appointmentService->getForUser($request->user(), $appointment)
+        );
     }
 
     public function store(AppointmentRequest $request)
     {
-        $data = $request->validated();
-
-        $data['user_id'] = $request->user()->id;
-        $data['status']  = 'booked';
-        $data['time']    = $data['date'] . ' ' . $data['time'] . ':00';
-
-        $appointment = Appointment::create($data);
-        $appointment->load(['doctor', 'department.clinic']);
+        $appointment = $this->appointmentService->createForUser(
+            $request->user(),
+            $request->validated()
+        );
 
         return response()->json($appointment, 201);
     }
 
-    public function cancel(Appointment $appointment)
+    public function cancel(Request $request, Appointment $appointment)
     {
-        $this->authorizeUser($appointment);
-
-        abort_if($appointment->status !== 'booked', 422, 'Only booked appointments can be canceled.');
-
-        $appointment->update(['status' => 'canceled']);
+        $appointment = $this->appointmentService->cancelForUser($request->user(), $appointment);
 
         return response()->json($appointment);
     }
@@ -60,13 +52,8 @@ class AppointmentController extends Controller
             'doctor_notes' => 'nullable|string',
         ]);
 
-        $appointment->update(array_merge($data, ['status' => 'completed']));
+        $appointment = $this->appointmentService->complete($appointment, $data);
 
         return response()->json($appointment);
-    }
-
-    private function authorizeUser(Appointment $appointment): void
-    {
-        abort_if($appointment->user_id !== request()->user()->id, 403, 'Forbidden.');
     }
 }
