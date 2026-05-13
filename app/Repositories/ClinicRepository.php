@@ -22,7 +22,7 @@ class ClinicRepository implements ClinicRepositoryInterface
 
     public function all()
     {
-        return Clinic::all();
+        return Clinic::all()->paginate(10);
     }
 
     public function create(array $data)

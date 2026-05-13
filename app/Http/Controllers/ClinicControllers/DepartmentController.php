@@ -34,7 +34,7 @@ class DepartmentController extends Controller
         ], 201);
     }
 
-    public function show($id)
+    public function show(int $id)
     {
         $department = $this->departmentService->getByIdForClinic($id);
 
@@ -44,7 +44,7 @@ class DepartmentController extends Controller
         ], 200);
     }
 
-    public function update(UpdateDepartmentRequest $request, $id)
+    public function update(UpdateDepartmentRequest $request, int $id)
     {
         $department = $this->departmentService
             ->updateForClinic($id, $request->validated());
@@ -55,7 +55,7 @@ class DepartmentController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $this->departmentService->deleteForClinic($id);
 
