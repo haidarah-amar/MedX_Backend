@@ -6,7 +6,6 @@ use App\Models\Appointment;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class AppointmentService implements AppointmentServiceInterface
 {
@@ -14,19 +13,19 @@ class AppointmentService implements AppointmentServiceInterface
         protected AppointmentRepositoryInterface $appointmentRepository
     ) {}
 
-    public function getUserAppointments(User $user, ?string $status = null): LengthAwarePaginator
+    public function getUserAppointments(User $user, ?string $status = null)
     {
         return $this->appointmentRepository->paginateForUser($user->id, $status);
     }
 
-    public function getForUser(User $user, Appointment $appointment): Appointment
+    public function getForUser(User $user, Appointment $appointment)
     {
         $this->authorizeUser($user, $appointment);
 
         return $appointment->load(['doctor', 'department.clinic']);
     }
 
-    public function createForUser(User $user, array $data): Appointment
+    public function createForUser(User $user, array $data)
     {
         $data['user_id'] = $user->id;
         $data['status'] = 'booked';
@@ -37,7 +36,7 @@ class AppointmentService implements AppointmentServiceInterface
         return $appointment->load(['doctor', 'department.clinic']);
     }
 
-    public function cancelForUser(User $user, Appointment $appointment): Appointment
+    public function cancelForUser(User $user, Appointment $appointment)
     {
         $this->authorizeUser($user, $appointment);
 
@@ -46,7 +45,7 @@ class AppointmentService implements AppointmentServiceInterface
         return $this->appointmentRepository->update($appointment, ['status' => 'canceled']);
     }
 
-    public function complete(Appointment $appointment, array $data): Appointment
+    public function complete(Appointment $appointment, array $data)
     {
         return $this->appointmentRepository->update(
             $appointment,
