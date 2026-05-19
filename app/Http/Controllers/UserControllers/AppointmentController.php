@@ -13,7 +13,8 @@ class AppointmentController extends Controller
 {
     public function __construct(
         protected AppointmentServiceInterface $appointmentService
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -56,17 +57,5 @@ class AppointmentController extends Controller
         $appointment = $this->appointmentService->complete($appointment, $data);
 
         return response()->json($appointment);
-    }
-
-    public function update(UpdateAppointmentRequest $request, Appointment $appointment)
-    {
-        $data = $request->validated();
-
-        $appointment = $this->appointmentService->updateForUser($request->user(), $appointment, $data);
-
-        return response()->json([
-            'message' => 'تم تحديث الموعد بنجاح',
-            'data' => $appointment
-        ]);
     }
 }
