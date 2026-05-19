@@ -11,4 +11,8 @@ interface AppointmentRepositoryInterface
     public function create(array $data);
 
     public function update(Appointment $appointment, array $data);
+    public function cancel(Appointment $appointment,array $data);
+
+    public function complete(Appointment $appointment,array $status);
+
 }

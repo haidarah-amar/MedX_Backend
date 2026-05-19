@@ -28,4 +28,17 @@ class AppointmentRepository implements AppointmentRepositoryInterface
 
         return $appointment;
     }
+    public function cancel(Appointment $appointment,array $data)
+    {
+        $appointment->update($data);
+
+        return $appointment;
+    }
+
+    public function complete(Appointment $appointment,array $data)
+    {
+        $appointment->update($data);
+
+        return $appointment;
+    }
 }

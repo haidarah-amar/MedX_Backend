@@ -2,16 +2,20 @@
 
 namespace App\Services;
 
+use App\Http\Requests\UpdateAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
+use Illuminate\Http\Request;
+
 
 class AppointmentService implements AppointmentServiceInterface
 {
     public function __construct(
         protected AppointmentRepositoryInterface $appointmentRepository
-    ) {}
+    ) {
+    }
 
     public function getUserAppointments(User $user, ?string $status = null)
     {
@@ -42,15 +46,13 @@ class AppointmentService implements AppointmentServiceInterface
 
         abort_if($appointment->status !== 'booked', 422, 'Only booked appointments can be canceled.');
 
-        return $this->appointmentRepository->update($appointment, ['status' => 'canceled']);
+        return $this->appointmentRepository->cancel($appointment, ['status' => 'cancelled']);
     }
 
     public function complete(Appointment $appointment, array $data)
     {
-        return $this->appointmentRepository->update(
-            $appointment,
-            array_merge($data, ['status' => 'completed'])
-        );
+        return $this->appointmentRepository->complete($appointment, ['status' => 'completed']   );
+
     }
 
     private function authorizeUser(User $user, Appointment $appointment): void

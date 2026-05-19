@@ -15,8 +15,8 @@ class UpdateDepartmentRequest extends FormRequest
     {
         return [
             'category_id' => 'sometimes|required|exists:departments_categories,id',
-            'description_en' => 'sometimes|required|string|max:255',
-            'description_ar' => 'sometimes|required|string|max:255',
+            'description_en' => 'sometimes|required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'description_ar' => 'sometimes|required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
         ];
     }
 }

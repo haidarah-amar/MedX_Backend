@@ -7,6 +7,7 @@ use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointment;
 use App\Services\Contracts\AppointmentServiceInterface;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateAppointmentRequest;
 
 class AppointmentController extends Controller
 {
@@ -55,5 +56,17 @@ class AppointmentController extends Controller
         $appointment = $this->appointmentService->complete($appointment, $data);
 
         return response()->json($appointment);
+    }
+
+    public function update(UpdateAppointmentRequest $request, Appointment $appointment)
+    {
+        $data = $request->validated();
+
+        $appointment = $this->appointmentService->updateForUser($request->user(), $appointment, $data);
+
+        return response()->json([
+            'message' => 'تم تحديث الموعد بنجاح',
+            'data' => $appointment
+        ]);
     }
 }

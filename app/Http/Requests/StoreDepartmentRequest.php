@@ -15,8 +15,8 @@ class StoreDepartmentRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists:departments_categories,id',
-            'description_en' => 'required|string|max:255',
-            'description_ar' => 'required|string|max:255',
+            'description_en' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'description_ar' => 'required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
         ];
     }
 }

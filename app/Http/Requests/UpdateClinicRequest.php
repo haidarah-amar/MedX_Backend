@@ -30,7 +30,7 @@ class UpdateClinicRequest extends FormRequest
             'location_en' => 'sometimes|string',
             'location_ar' => 'sometimes|string',
 
-            'phone_number' => ['required','string','regex:/^09[0-9]{8}$/'],
+            'phone_number' => ['sometimes','string','regex:/^09[0-9]{8}$/'],
 
             'working_hours' => 'sometimes|integer|min:1',
 

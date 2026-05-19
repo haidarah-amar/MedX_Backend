@@ -15,9 +15,9 @@ class UpdateDoctorRequest extends FormRequest
     {
         return [
             'name_en' => 'sometimes|required|string|max:255|regex:/^[a-zA-Z\s]+$/',
-            'name_ar' => 'sometimes|required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'name_ar' => 'sometimes|required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
             'specialization_en' => 'sometimes|required|string|max:255|regex:/^[a-zA-Z\s]+$/',
-            'specialization_ar' => 'sometimes|required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'specialization_ar' => 'sometimes|required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
             'birthdate' => 'sometimes|required|date',
             'id_passport' => 'sometimes|required|string|max:255',
             'photo' => 'sometimes|required|image|mimes:jpg,jpeg,png,webp|max:2048',

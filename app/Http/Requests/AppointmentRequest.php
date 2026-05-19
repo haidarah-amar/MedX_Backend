@@ -29,6 +29,7 @@ class AppointmentRequest extends FormRequest
             'time' => 'required|date_format:H:i',
             'is_asap' => 'sometimes|boolean',
             'user_notes' => 'nullable|string',
+            'doctor_notes' => 'nullable|string',
         ];
     }
 }

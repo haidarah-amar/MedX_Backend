@@ -16,4 +16,5 @@ interface AppointmentServiceInterface
     public function cancelForUser(User $user, Appointment $appointment);
 
     public function complete(Appointment $appointment, array $data);
+
 }
