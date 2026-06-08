@@ -14,7 +14,7 @@ interface DepartmentServiceInterface
 
     public function delete(int $id);
 
-    public function getAllForClinic();
+    public function getAllForClinic(int $clinicId);
 
     public function getByIdForClinic(int $id);
 

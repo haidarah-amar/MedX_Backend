@@ -41,4 +41,18 @@ class AppointmentRepository implements AppointmentRepositoryInterface
 
         return $appointment;
     }
+
+    public function updateDoctorNotes(
+    int $appointmentId,
+    string $doctorNotes
+)
+{
+    $appointment = Appointment::findOrFail($appointmentId);
+
+    $appointment->update([
+        'doctor_notes' => $doctorNotes,
+    ]);
+
+    return $appointment;
+}
 }

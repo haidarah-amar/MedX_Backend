@@ -37,7 +37,7 @@ class Doctor extends Model
         return $this->belongsToMany(
             Department::class,
             'departments_doctors'
-        )->withPivot('clinic_id')->withTimestamps();
+        )->withPivot('clinic_id', 'hourly_rate')->withTimestamps();
     }
 
     public function appointments()

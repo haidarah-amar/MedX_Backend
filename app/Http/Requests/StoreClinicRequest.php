@@ -21,8 +21,8 @@ class StoreClinicRequest extends FormRequest
             'name_ar' => 'required|string|max:255',
 
             'owner_name' => 'required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
-            'owner_idphoto' => 'required',
-            'owner_idphoto.*' => 'file|image|mimes:jpeg,png,jpg,webp|max:2048',
+            
+            'owner_idphoto' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
 
 
             'description_en' => 'required|string',
@@ -33,16 +33,17 @@ class StoreClinicRequest extends FormRequest
 
             'phone_number' => ['required','string','regex:/^09[0-9]{8}$/'],
 
-            'working_hours' => 'nullable|integer|min:1',
+            'working_hours' => 'required|integer|min:1',
 
-            'is_active' => 'nullable|boolean',
-            'is_24h' => 'nullable|boolean',
+            'is_active' => 'required|boolean',
+            // 'is_24h' => 'required|boolean',
 
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
+            'latitude' => 'required|string',
+            'longitude' => 'required|string',
 
-            'logo' => 'nullable',
-            'logo.*' => 'file|image|mimes:jpeg,png,jpg,webp|max:2048'
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+
+            'percentage' => 'required|numeric|min:0|max:100',
         ];
     }
 }

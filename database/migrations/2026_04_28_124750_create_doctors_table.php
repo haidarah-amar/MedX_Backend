@@ -21,7 +21,6 @@ return new class extends Migration
             $table->date('birthdate');
             $table->string('id_passport');
             $table->string('photo');
-            $table->unsignedBigInteger('hourly_rate');
             $table->unsignedBigInteger('working_hours');
             $table->timestamps();
         });

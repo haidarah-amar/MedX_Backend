@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('dep_id');
             $table->date('date');
             $table->timestamp('time');
+            $table->double('appointment_fee', 5, 2);
             $table->boolean('is_asap')->default(false);
             $table->enum('status', ['booked', 'canceled', 'completed'])->default('booked');
             $table->text('user_notes')->nullable();

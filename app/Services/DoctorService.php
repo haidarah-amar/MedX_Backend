@@ -46,7 +46,18 @@ class DoctorService implements DoctorServiceInterface
     return $this->doctorRepository->contractDoctor(
         $clinicId,
         $data['doctor_id'],
-        $data['department_id']
+        $data['department_id'],
+        $data['hourly_rate']
+    );
+}
+
+public function updateHourlyRate(int $clinicId, array $data)
+{
+    return $this->doctorRepository->updateHourlyRate(
+        $clinicId,
+        $data['doctor_id'],
+        $data['department_id'],
+        $data['hourly_rate']
     );
 }
 

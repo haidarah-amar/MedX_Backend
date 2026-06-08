@@ -18,8 +18,14 @@ interface DoctorRepositoryInterface
     public function delete(Doctor $doctor): bool;
 
     public function findBySerial(string $serial): Doctor;
-    public function contractDoctor(int $clinicId, int $doctorId, int $departmentId);
+    public function contractDoctor(int $clinicId, int $doctorId, int $departmentId , float $hourlyRate);
 
+    public function updateHourlyRate(
+    int $clinicId,
+    int $doctorId,
+    int $departmentId,
+    float $hourlyRate
+);
     public function uncontractDoctor(
     int $clinicId,
     int $doctorId,

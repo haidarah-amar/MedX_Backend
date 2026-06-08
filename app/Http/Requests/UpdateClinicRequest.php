@@ -35,12 +35,13 @@ class UpdateClinicRequest extends FormRequest
             'working_hours' => 'sometimes|integer|min:1',
 
             'is_active' => 'sometimes|boolean',
-            'is_24h' => 'sometimes|boolean',
+            // 'is_24h' => 'sometimes|boolean',
 
             'latitude' => 'sometimes|string',
             'longitude' => 'sometimes|string',
 
             'logo' => 'sometimes|string',
+            'percentage' => 'sometimes|numeric|min:0|max:100',
         ];
     }
 }

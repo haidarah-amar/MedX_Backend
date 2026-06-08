@@ -21,7 +21,7 @@ class StoreDoctorRequest extends FormRequest
             'birthdate' => 'required|date',
             'id_passport' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'hourly_rate' => 'required|integer|min:0',
+            // 'hourly_rate' => 'required|integer|min:0',
             'working_hours' => 'required|integer|min:1',
             ];
     }

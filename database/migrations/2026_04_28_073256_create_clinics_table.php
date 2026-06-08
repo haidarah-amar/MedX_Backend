@@ -27,10 +27,10 @@ return new class extends Migration
             $table->integer('working_hours')->default(8);
             $table->boolean('is_approved')->default(false);
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_24h')->default(false);
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->string('logo')->nullable();
+            $table->double('percentage', 5, 2)->default(0);
             $table->timestamps();
         });
     }

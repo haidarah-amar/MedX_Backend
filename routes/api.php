@@ -48,7 +48,7 @@ Route::prefix('clinics/management')->group(function () {
 
 Route::prefix('clinics/departments')->controller(DepartmentController::class)->group(function () {
 
-    Route::get('/', 'index');
+    Route::get('/{clinicId}', 'index');
     Route::post('/', 'store');
     Route::get('/{id}', 'show');
     Route::post('/{id}', 'update');
@@ -62,6 +62,7 @@ Route::prefix('clinics/doctors')->controller(DoctorController::class)->group(fun
     Route::get('/serial/{serial}', 'findBySerial');
     Route::get('/contracted', 'clinicDoctors');
     Route::post('/contract', 'contract');
+    Route::post('/update_hourly_rate', 'updateHourlyRate');
     Route::post('/uncontract', 'uncontract');
     Route::get('/{id}', 'show');
     Route::post('/{id}', 'update');

@@ -21,7 +21,7 @@ class UpdateDoctorRequest extends FormRequest
             'birthdate' => 'sometimes|required|date',
             'id_passport' => 'sometimes|required|string|max:255',
             'photo' => 'sometimes|required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'hourly_rate' => 'sometimes|required|integer|min:0',
+            // 'hourly_rate' => 'sometimes|required|integer|min:0',
             'working_hours' => 'sometimes|required|integer|min:1',
             ];
     }

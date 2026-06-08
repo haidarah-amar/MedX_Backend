@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ClinicControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractDoctorRequest;
 use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UpdateDoctorContractRequest;
 use App\Http\Requests\UpdateDoctorRequest;
 use App\Services\Contracts\DoctorServiceInterface;
 
@@ -140,5 +141,25 @@ public function uncontract(ContractDoctorRequest $request)
     return response()->json([
         'message' => 'تم إلغاء التعاقد مع الطبيب بنجاح'
     ], 200);
+}
+
+public function updateHourlyRate(UpdateDoctorContractRequest $request)
+{
+    $clinic = auth('clinic-api')->user();
+
+    $updated = $this->doctorService->updateHourlyRate(
+        $clinic->id,
+        $request->validated()
+    );
+
+    if (!$updated) {
+        return response()->json([
+            'message' => 'العقد غير موجود'
+        ], 404);
+    }
+
+    return response()->json([
+        'message' => 'تم تعديل الأجرة بنجاح'
+    ]);
 }
 }

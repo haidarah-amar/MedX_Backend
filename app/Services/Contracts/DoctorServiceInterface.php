@@ -18,6 +18,7 @@ interface DoctorServiceInterface
     public function findBySerial(string $serial): Doctor;
 
     public function contractDoctor(int $clinicId, array $data);
+    public function updateHourlyRate(int $clinicId, array $data);
 
     public function getClinicDoctors(int $clinicId);
 

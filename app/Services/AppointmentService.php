@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Http\Requests\UpdateAppointmentRequest;
 use App\Models\Appointment;
+use App\Models\Clinic;
+use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class AppointmentService implements AppointmentServiceInterface
 {
@@ -31,9 +34,21 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function createForUser(User $user, array $data)
     {
+        
+        $clinic_id = Department::findOrFail($data['dep_id'])->clinic_id;
+        $doctor_hourly_rate=$hourlyRate = DB::table('departments_doctors')
+        ->where('doctor_id', $data['doctor_id'])
+        ->where('clinic_id', $clinic_id)
+        ->value('hourly_rate');
+        $clinic_percentage=Clinic::findOrFail($clinic_id)->percentage;
+
+       
+        $fee = $doctor_hourly_rate + ($doctor_hourly_rate * $clinic_percentage /100);
+
         $data['user_id'] = $user->id;
         $data['status'] = 'booked';
         $data['time'] = $data['date'] . ' ' . $data['time'] . ':00';
+        $data['appointment_fee'] = $fee;
 
         $appointment = $this->appointmentRepository->create($data);
 
@@ -59,4 +74,10 @@ class AppointmentService implements AppointmentServiceInterface
     {
         abort_if($appointment->user_id !== $user->id, 403, 'Forbidden.');
     }
+
+    public function updateDoctorNotes( int $appointmentId, string $doctorNotes )
+{
+    return $this->appointmentRepository
+        ->updateDoctorNotes($appointmentId, $doctorNotes);
+}
 }

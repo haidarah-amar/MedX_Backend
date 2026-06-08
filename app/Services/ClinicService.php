@@ -13,6 +13,17 @@ class ClinicService implements ClinicServiceInterface
 
     public function register(array $data)
     {
+        if (isset($data['logo'])) {
+        $data['logo'] = $data['logo']->store('clinics/logos', 'public');
+    }  else {
+        $data['logo'] = 'defaults/clinic-logo.png';
+    }
+
+
+    if (isset($data['owner_idphoto'])) {
+        $data['owner_idphoto'] = $data['owner_idphoto']->store('clinics/owners', 'public');
+    }
+
         return $this->clinicRepository->create($data);
     }
 

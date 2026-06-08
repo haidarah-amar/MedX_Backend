@@ -19,6 +19,7 @@ class Appointment extends Model
         'status',
         'user_notes',
         'doctor_notes',
+        'appointment_fee',
     ];
 
     protected $casts = [

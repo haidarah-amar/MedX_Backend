@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
             $table->foreignId('department_id')->constrained()->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+            $table->unique(['clinic_id', 'department_id', 'doctor_id']);
+            $table->double('hourly_rate', 5, 2)->default(0);
             $table->timestamps();
         });
     }

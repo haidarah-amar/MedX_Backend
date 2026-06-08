@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Services\Contracts\AppointmentServiceInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateAppointmentRequest;
+use App\Http\Requests\UpdateDoctorNotesRequest;
 
 class AppointmentController extends Controller
 {
@@ -58,4 +59,17 @@ class AppointmentController extends Controller
 
         return response()->json($appointment);
     }
+
+    public function updateDoctorNotes(UpdateDoctorNotesRequest $request, int $appointmentId)
+{
+    $appointment = $this->appointmentService->updateDoctorNotes(
+        $appointmentId,
+        $request->validated()['doctor_notes']
+    );
+
+    return response()->json([
+        'message' => 'تم حفظ ملاحظات الطبيب',
+        'data' => $appointment
+    ]);
+}
 }

@@ -36,15 +36,9 @@ class DepartmentService implements DepartmentServiceInterface
         return $this->departmentRepository->delete($id);
     }
 
-    public function getAllForClinic()
+    public function getAllForClinic(int $clinicId)
     {
-        $clinic = auth('clinic-api')->user();
-
-        if (!$clinic) {
-            abort(403, 'Unauthorized');
-        }
-
-        return $this->departmentRepository->allForClinic($clinic->id);
+        return $this->departmentRepository->allForClinic($clinicId);
     }
 
     public function getByIdForClinic(int $id)

@@ -42,7 +42,8 @@ class DoctorRepository implements DoctorRepositoryInterface
     public function contractDoctor(
     int $clinicId,
     int $doctorId,
-    int $departmentId
+    int $departmentId,
+    float $hourlyRate
     ) {
     $doctor = Doctor::findOrFail($doctorId);
 
@@ -55,10 +56,39 @@ class DoctorRepository implements DoctorRepositoryInterface
     }
 
     $doctor->departments()->attach($departmentId, [
-        'clinic_id' => $clinicId
+        'clinic_id' => $clinicId,
+        'hourly_rate' => $hourlyRate,
     ]);
 
     return $doctor->load('departments');
+}
+
+public function updateHourlyRate(
+    int $clinicId,
+    int $doctorId,
+    int $departmentId,
+    float $hourlyRate
+)
+{
+    $doctor = Doctor::findOrFail($doctorId);
+
+    $exists = $doctor->departments()
+        ->wherePivot('clinic_id', $clinicId)
+        ->where('department_id', $departmentId)
+        ->exists();
+
+    if (!$exists) {
+        return false;
+    }
+
+    $doctor->departments()->updateExistingPivot(
+        $departmentId,
+        [
+            'hourly_rate' => $hourlyRate
+        ]
+    );
+
+    return true;
 }
 
     public function getClinicDoctors(int $clinicId)

@@ -13,9 +13,9 @@ class DepartmentController extends Controller
         protected DepartmentServiceInterface $departmentService
     ) {}
 
-    public function index()
+    public function index(int $clinicId)
     {
-        $departments = $this->departmentService->getAllForClinic();
+        $departments = $this->departmentService->getAllForClinic($clinicId);
 
         return response()->json([
             'message' => 'تم جلب جميع الأقسام بنجاح',
