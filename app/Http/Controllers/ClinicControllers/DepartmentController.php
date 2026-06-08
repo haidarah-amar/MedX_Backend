@@ -18,7 +18,7 @@ class DepartmentController extends Controller
         $departments = $this->departmentService->getAllForClinic($clinicId);
 
         return response()->json([
-            'message' => 'تم جلب جميع الأقسام بنجاح',
+            'message' => __('messages.departments_fetched'),
             'data' => $departments
         ], 200);
     }
@@ -29,7 +29,7 @@ class DepartmentController extends Controller
             ->createForClinic($request->validated());
 
         return response()->json([
-            'message' => 'تم إنشاء القسم بنجاح',
+            'message' => __('messages.department_created'),
             'data' => $department
         ], 201);
     }
@@ -39,7 +39,7 @@ class DepartmentController extends Controller
         $department = $this->departmentService->getByIdForClinic($id);
 
         return response()->json([
-            'message' => 'تم جلب القسم بنجاح',
+            'message' => __('messages.department_fetched'),
             'data' => $department
         ], 200);
     }
@@ -50,7 +50,7 @@ class DepartmentController extends Controller
             ->updateForClinic($id, $request->validated());
 
         return response()->json([
-            'message' => 'تم تحديث القسم بنجاح',
+            'message' => __('messages.department_updated'),
             'data' => $department
         ], 200);
     }
@@ -60,7 +60,7 @@ class DepartmentController extends Controller
         $this->departmentService->deleteForClinic($id);
 
         return response()->json([
-            'message' => 'تم حذف القسم بنجاح'
+            'message' => __('messages.department_deleted')
         ], 200);
     }
 }

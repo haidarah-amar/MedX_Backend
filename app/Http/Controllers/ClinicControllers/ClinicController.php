@@ -21,7 +21,7 @@ class ClinicController extends Controller
             ->register($request->validated());
 
         return response()->json([
-            'message' => 'تم تسجيل العيادة بنجاح',
+            'message' => __('messages.clinic_registered'),
             'clinic' => $clinic
         ], 201);
     }
@@ -33,13 +33,13 @@ class ClinicController extends Controller
 
         if ($result === null) {
             return response()->json([
-                'error' => 'Unauthorized'
+                'error' => __('messages.unauthorized')
             ], 401);
         }
 
         if ($result === false) {
             return response()->json([
-                'error' => 'لم يتم تفعيل الحساب بعد'
+                'error' => __('messages.clinic_not_approved')
             ], 403);
         }
 
@@ -52,12 +52,12 @@ class ClinicController extends Controller
 
         if (!$logout) {
             return response()->json([
-                'message' => 'Token not found'
+                'message' => __('messages.token_not_found')
             ], 400);
         }
 
         return response()->json([
-            'message' => 'تم تسجيل الخروج بنجاح'
+            'message' => __('messages.clinic_logout')
         ]);
     }
 
@@ -77,7 +77,7 @@ class ClinicController extends Controller
             ->update($clinic->id, $request->validated());
 
         return response()->json([
-            'message' => 'تم تحديث بيانات العيادة بنجاح',
+            'message' => __('messages.clinic_updated'),
             'clinic' => $updatedClinic
         ]);
     }
@@ -90,7 +90,7 @@ class ClinicController extends Controller
             ->activate($clinic->id);
 
         return response()->json([
-            'message' => 'تم تحديث حالة العيادة بنجاح',
+            'message' => __('messages.clinic_status_updated'),
             'is_active' => $updatedClinic->is_active
         ]);
     }
@@ -111,7 +111,7 @@ class ClinicController extends Controller
             );
 
         return response()->json([
-            'message' => 'تمت اضافة الصور بنجاح',
+            'message' => __('messages.images_uploaded'),
             'data' => $images
         ]);
     }

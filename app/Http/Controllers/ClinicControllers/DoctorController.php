@@ -30,7 +30,7 @@ class DoctorController extends Controller
         $doctor = $this->doctorService->create($data);
 
         return response()->json([
-            'message' => 'تم إنشاء الطبيب بنجاح',
+            'message' => __('messages.doctor_created'),
             'data' => $doctor
         ], 201);
     }
@@ -40,7 +40,7 @@ class DoctorController extends Controller
         $doctor = $this->doctorService->getById($id);
 
         return response()->json([
-            'message' => 'تم جلب الطبيب بنجاح',
+            'message' => __('messages.doctor_fetched'),
             'data' => $doctor
         ], 200);
     }
@@ -56,7 +56,7 @@ class DoctorController extends Controller
         $doctor = $this->doctorService->update($id, $data);
 
         return response()->json([
-            'message' => 'تم تحديث الطبيب بنجاح',
+            'message' => __('messages.doctor_updated'),
             'data' => $doctor
         ], 200);
     }
@@ -66,7 +66,7 @@ class DoctorController extends Controller
         $this->doctorService->delete($id);
 
         return response()->json([
-            'message' => 'تم حذف الطبيب بنجاح'
+            'message' => __('messages.doctor_deleted')
         ], 200);
     }
 
@@ -75,7 +75,7 @@ class DoctorController extends Controller
         $doctor = $this->doctorService->findBySerial($serial);
 
         return response()->json([
-            'message' => 'تم جلب الطبيب بنجاح',
+            'message' => __('messages.doctor_fetched'),
             'data' => $doctor
         ], 200);
     }
@@ -85,7 +85,7 @@ class DoctorController extends Controller
         $doctors = $this->doctorService->getAllDoctors();
 
         return response()->json([
-            'message' => 'تم جلب جميع الأطباء بنجاح',
+            'message' => __('messages.doctors_fetched'),
             'data' => $doctors
         ], 200);
     }
@@ -101,12 +101,12 @@ class DoctorController extends Controller
 
     if (!$doctor) {
         return response()->json([
-            'message' => 'الطبيب مرتبط بالفعل مع هذا القسم'
+            'message' => __('messages.doctor_already_contracted')
         ], 409);
     }
 
     return response()->json([
-        'message' => 'تم التعاقد مع الطبيب بنجاح',
+        'message' => __('messages.doctor_contracted'),
         'data' => $doctor
     ], 201);
 }
@@ -118,7 +118,7 @@ class DoctorController extends Controller
         ->getClinicDoctors($clinic->id);
 
     return response()->json([
-        'message' => 'تم جلب أطباء المركز بنجاح',
+        'message' => __('messages.clinic_doctors_fetched'),
         'data' => $doctors
     ], 200);
 }
@@ -134,12 +134,12 @@ public function uncontract(ContractDoctorRequest $request)
 
     if (!$result) {
         return response()->json([
-            'message' => 'الطبيب غير متعاقد مع هذا القسم'
+            'message' => __('messages.doctor_not_contracted')
         ], 404);
     }
 
     return response()->json([
-        'message' => 'تم إلغاء التعاقد مع الطبيب بنجاح'
+        'message' => __('messages.doctor_uncontracted')
     ], 200);
 }
 
@@ -154,12 +154,13 @@ public function updateHourlyRate(UpdateDoctorContractRequest $request)
 
     if (!$updated) {
         return response()->json([
-            'message' => 'العقد غير موجود'
+            'message' => __('messages.contract_not_found')
         ], 404);
     }
 
     return response()->json([
-        'message' => 'تم تعديل الأجرة بنجاح'
-    ]);
+        'message' => __('messages.hourly_rate_updated')
+    ], 200);
+    
 }
 }
