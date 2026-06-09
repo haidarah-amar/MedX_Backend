@@ -13,18 +13,22 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('dep_id');
+            $table->unsignedBigInteger('clinic_id');
             $table->date('date');
             $table->timestamp('time');
-            $table->double('appointment_fee', 5, 2);
+            $table->double('appointment_fee', 6, 2);
+            $table->decimal('doctor_cost', 6, 2)->nullable();
             $table->boolean('is_asap')->default(false);
             $table->enum('status', ['booked', 'canceled', 'completed'])->default('booked');
             $table->text('user_notes')->nullable();
             $table->text('doctor_notes')->nullable();
+            $table->boolean('is_returning')->default(false);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('cascade');
             $table->foreign('dep_id')->references('id')->on('departments')->onDelete('cascade');
+            $table->foreign('clinic_id')->references('id')->on('clinics')->onDelete('cascade');
         });
     }
 

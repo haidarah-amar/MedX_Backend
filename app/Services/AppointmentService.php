@@ -42,10 +42,18 @@ class AppointmentService implements AppointmentServiceInterface
         ->value('hourly_rate');
         $clinic_percentage=Clinic::findOrFail($clinic_id)->percentage;
 
-       
         $fee = $doctor_hourly_rate + ($doctor_hourly_rate * $clinic_percentage /100);
 
+        $is_returning = DB::table('appointments')
+        ->where('user_id', $user->id)
+        ->where('clinic_id', $clinic_id)
+        ->where('status', 'completed') 
+        ->exists();
+
+        $data['is_returning'] = $is_returning;
+        $data['doctor_cost'] = $doctor_hourly_rate;
         $data['user_id'] = $user->id;
+        $data['clinic_id'] = $clinic_id;
         $data['status'] = 'booked';
         $data['time'] = $data['date'] . ' ' . $data['time'] . ':00';
         $data['appointment_fee'] = $fee;

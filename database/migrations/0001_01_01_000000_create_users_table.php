@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
-            $table->char('phone_number', 15)->nullable();
+            $table->char('phone_number', 25)->nullable();
             $table->enum('gender', ['female', 'male'])->nullable();
-            $table->timestamp('birthdate')->nullable();
+            $table->date('birthdate')->nullable();
             $table->string('address')->nullable();
             $table->string('id_passport')->nullable();
             $table->string('password');

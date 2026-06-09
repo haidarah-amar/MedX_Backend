@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Clinic extends Authenticatable implements JWTSubject
 {
+    use HasFactory;
     protected $guarded = [];
 
     public function getJWTIdentifier()
@@ -43,5 +45,15 @@ class Clinic extends Authenticatable implements JWTSubject
             'clinic_id',
             'doctor_id'
         )->withPivot('department_id')->withTimestamps();
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'clinic_id');
+    }
+
+    public function operationalExpenses()
+    {
+        return $this->hasMany(OperationalExpense::class, 'clinic_id');
     }
 }

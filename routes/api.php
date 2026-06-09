@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserControllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
+use App\Http\Controllers\FinancialControllers\FinancialDashboardController;
+use App\Http\Controllers\FinancialControllers\FinancialTrendController;
+use App\Http\Controllers\FinancialControllers\OperationalExpenseController;
 use App\Http\Controllers\UserControllers\AppointmentController;
 
 // User Auth
@@ -68,3 +71,44 @@ Route::prefix('clinics/doctors')->controller(DoctorController::class)->group(fun
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
 });
+
+Route::prefix('financial/expenses')
+    ->controller(OperationalExpenseController::class)
+    ->group(function () {
+
+        Route::get('/', 'index');
+
+        Route::post('/', 'store');
+
+        Route::get('/{operationalExpense}', 'show');
+
+        Route::put('/{operationalExpense}', 'update');
+
+        Route::delete('/{operationalExpense}', 'destroy');
+    });
+
+Route::prefix('financial/trends')
+    ->controller(FinancialTrendController::class)
+    ->group(function () {
+
+        Route::get('/revenue', 'revenue');
+
+        Route::get('/doctor-cost', 'doctorCost');
+
+        Route::get('/expenses', 'expenses');
+
+        Route::get('/profit', 'profit');
+    });
+
+Route::prefix('financial/dashboard')
+    ->controller(FinancialDashboardController::class)
+    ->group(function () {
+
+        Route::get('/summary', 'summary');
+
+        Route::get('/patient-inflow', 'patientInflow');
+
+        Route::get('/appointment-status', 'appointmentStatus');
+
+        Route::get('/departments', 'departments');
+    });

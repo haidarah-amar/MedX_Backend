@@ -13,6 +13,7 @@ class Appointment extends Model
         'user_id',
         'doctor_id',
         'dep_id',
+        'clinic_id',
         'date',
         'time',
         'is_asap',
@@ -20,6 +21,8 @@ class Appointment extends Model
         'user_notes',
         'doctor_notes',
         'appointment_fee',
+        'is_returning',
+        'doctor_cost',
     ];
 
     protected $casts = [
@@ -43,6 +46,11 @@ class Appointment extends Model
     public function department()
     {
         return $this->belongsTo(Department::class, 'dep_id');
+    }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\OperationalExpenseRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 // Clinic
@@ -25,14 +26,22 @@ use App\Services\Contracts\DoctorServiceInterface;
 // Appointment
 use App\Repositories\AppointmentRepository;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
+use App\Repositories\Contracts\FinancialAnalyticsRepositoryInterface;
 use App\Services\AppointmentService;
 use App\Services\Contracts\AppointmentServiceInterface;
 
 // User
 use App\Repositories\UserRepository;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\FinancialAnalyticsRepository;
+use App\Repositories\OperationalExpenseRepository;
+use App\Services\Contracts\FinancialAnalyticsServiceInterface;
+use App\Services\Contracts\OperationalExpenseServiceInterface;
 use App\Services\UserService;
 use App\Services\Contracts\UserServiceInterface;
+use App\Services\FinancialAnalyticsService;
+use App\Services\OperationalExpenseService;
+use FinancialAnalyticsRepository as GlobalFinancialAnalyticsRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -95,6 +104,26 @@ class AppServiceProvider extends ServiceProvider
             UserServiceInterface::class,
             UserService::class
         );
+
+        $this->app->bind(
+            FinancialAnalyticsRepositoryInterface::class,
+            FinancialAnalyticsRepository::class
+);
+
+        $this->app->bind(
+            FinancialAnalyticsServiceInterface::class,
+            FinancialAnalyticsService::class
+);
+
+$this->app->bind(
+    OperationalExpenseRepositoryInterface::class,
+    OperationalExpenseRepository::class
+);
+
+$this->app->bind(
+    OperationalExpenseServiceInterface::class,
+    OperationalExpenseService::class
+);
     }
 
     /**
