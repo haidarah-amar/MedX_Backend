@@ -7,6 +7,7 @@ use App\Http\Controllers\UserControllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
 use App\Http\Controllers\FinancialControllers\FinancialDashboardController;
+use App\Http\Controllers\FinancialControllers\FinancialExportController;
 use App\Http\Controllers\FinancialControllers\FinancialTrendController;
 use App\Http\Controllers\FinancialControllers\OperationalExpenseController;
 use App\Http\Controllers\UserControllers\AppointmentController;
@@ -112,3 +113,6 @@ Route::prefix('financial/dashboard')
 
         Route::get('/departments', 'departments');
     });
+
+
+Route::get('/financial/export',[FinancialExportController::class, 'export']);

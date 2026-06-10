@@ -9,13 +9,14 @@ use App\Repositories\Contracts\FinancialAnalyticsRepositoryInterface;
 
 class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterface
 {
+    
     private function completedAppointments(
         int $clinicId,
         ?string $from = null,
         ?string $to = null,
         ?int $departmentId = null
     ) {
-        return Appointment::query()
+        return Appointment::withoutGlobalScopes()
             ->where('clinic_id', $clinicId)
             ->where('status', 'completed')
             ->when(
@@ -30,7 +31,7 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
                 $departmentId,
                 fn ($q) => $q->where('dep_id', $departmentId)
             );
-    }
+       }
 
     public function revenueSum(
         int $clinicId,
@@ -38,12 +39,8 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
         ?string $to = null,
         ?int $departmentId = null
     ): float {
-        return (float) $this->completedAppointments(
-            $clinicId,
-            $from,
-            $to,
-            $departmentId
-        )->sum('appointment_fee');
+        return (float) $this->completedAppointments($clinicId, $from, $to, $departmentId)
+            ->sum('appointment_fee');
     }
 
     public function doctorCostSum(
@@ -52,12 +49,8 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
         ?string $to = null,
         ?int $departmentId = null
     ): float {
-        return (float) $this->completedAppointments(
-            $clinicId,
-            $from,
-            $to,
-            $departmentId
-        )->sum('doctor_cost');
+        return (float) $this->completedAppointments($clinicId, $from, $to, $departmentId)
+            ->sum('doctor_cost');
     }
 
     public function expensesSum(
@@ -66,9 +59,9 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
         ?string $to = null,
         ?int $departmentId = null
     ): float {
-        return (float) OperationalExpense::query()
+        return (float) OperationalExpense::withoutGlobalScopes()
             ->whereHas('department', function ($q) use ($clinicId) {
-                $q->where('clinic_id', $clinicId);
+                $q->withoutGlobalScopes()->where('clinic_id', $clinicId);
             })
             ->when(
                 $from,
@@ -91,18 +84,14 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
         ?string $to = null,
         ?int $departmentId = null
     ) {
-        return $this->completedAppointments(
-            $clinicId,
-            $from,
-            $to,
-            $departmentId
-        )
-        ->selectRaw("
-            COUNT(*) total,
-            SUM(CASE WHEN is_returning = 1 THEN 1 ELSE 0 END) returning_count,
-            SUM(CASE WHEN is_returning = 0 THEN 1 ELSE 0 END) new_count
-        ")
-        ->first();
+        // الآن ستعمل الـ selectRaw بنجاح ساحق لأنها تُبنى فوق الـ Query Builder
+        return $this->completedAppointments($clinicId, $from, $to, $departmentId)
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN is_returning = 1 THEN 1 ELSE 0 END) as returning_count,
+                SUM(CASE WHEN is_returning = 0 THEN 1 ELSE 0 END) as new_count
+            ")
+            ->first(); // نستخدم first() لأننا نريد صفاً واحداً مجمعاً وليس كولكشن
     }
 
     public function appointmentStatus(
@@ -111,7 +100,7 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
         ?string $to = null,
         ?int $departmentId = null
     ) {
-        return Appointment::query()
+        return Appointment::withoutGlobalScopes()
             ->where('clinic_id', $clinicId)
             ->when(
                 $from,
@@ -126,40 +115,48 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
                 fn ($q) => $q->where('dep_id', $departmentId)
             )
             ->selectRaw("
-                COUNT(*) total,
-                SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) completed_count,
-                SUM(CASE WHEN status='canceled' THEN 1 ELSE 0 END) canceled_count
+                COUNT(*) as total,
+                SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) as completed_count,
+                SUM(CASE WHEN status='canceled' THEN 1 ELSE 0 END) as canceled_count
             ")
-            ->first();
+            ->first(); // نستخدم first() هنا أيضاً لأنها تعيد إحصائية شاملة لصف واحد
     }
 
     public function departmentBreakdown(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
-        $departments = Appointment::query()
-            ->where('clinic_id', $clinicId)
-            ->where('status', 'completed')
+        $departments = Appointment::withoutGlobalScopes()
+            ->join('departments', 'appointments.dep_id', '=', 'departments.id')
+            ->join('departments_categories', 'departments.category_id', '=', 'departments_categories.id')
+            ->where('appointments.clinic_id', $clinicId)
+            ->where('appointments.status', 'completed')
             ->when(
                 $from,
-                fn ($q) => $q->whereDate('date', '>=', $from)
+                fn ($q) => $q->whereDate('appointments.date', '>=', $from)
             )
             ->when(
                 $to,
-                fn ($q) => $q->whereDate('date', '<=', $to)
+                fn ($q) => $q->whereDate('appointments.date', '<=', $to)
+            )
+            ->when(
+                $departmentId,
+                fn ($q) => $q->where('appointments.dep_id', $departmentId)
             )
             ->selectRaw("
-                dep_id,
-                SUM(appointment_fee) as revenue,
-                SUM(doctor_cost) as doctor_cost
+                appointments.dep_id,
+                departments_categories.name_en as cat_name_en,
+                SUM(appointments.appointment_fee) as revenue,
+                SUM(appointments.doctor_cost) as doctor_cost
             ")
-            ->groupBy('dep_id')
+            ->groupBy('appointments.dep_id', 'departments_categories.name_en')
             ->get();
 
         return $departments->map(function ($department) use ($clinicId, $from, $to) {
 
-            $expenses = OperationalExpense::query()
+            $expenses = OperationalExpense::withoutGlobalScopes()
                 ->where('department_id', $department->dep_id)
                 ->when(
                     $from,
@@ -171,15 +168,13 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
                 )
                 ->sum('amount');
 
-            $departmentModel = Department::findOrFail($department->dep_id);
-
             return [
-                'department_id' => $department->dep_id,
-                'department_name' => $departmentModel?->category?->name_en ?? null,
-                'revenue' => (float) $department->revenue,
-                'doctor_cost' => (float) $department->doctor_cost,
-                'expenses' => (float) $expenses,
-                'net_profit' => (
+                'department_id'   => $department->dep_id,
+                'department_name' => $department->cat_name_en,
+                'revenue'         => (float) $department->revenue,
+                'doctor_cost'     => (float) $department->doctor_cost,
+                'expenses'        => (float) $expenses,
+                'net_profit'      => (
                     (float) $department->revenue
                     - (float) $department->doctor_cost
                     - (float) $expenses
@@ -191,9 +186,10 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
     public function revenueTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
-        return Appointment::query()
+        return Appointment::withoutGlobalScopes()
             ->where('clinic_id', $clinicId)
             ->where('status', 'completed')
             ->when(
@@ -203,6 +199,10 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
             ->when(
                 $to,
                 fn ($q) => $q->whereDate('date', '<=', $to)
+            )
+            ->when(
+                $departmentId,
+                fn ($q) => $q->where('dep_id', $departmentId)
             )
             ->selectRaw("
                 DATE_FORMAT(date,'%Y-%m') as month,
@@ -216,9 +216,10 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
     public function doctorCostTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
-        return Appointment::query()
+        return Appointment::withoutGlobalScopes()
             ->where('clinic_id', $clinicId)
             ->where('status', 'completed')
             ->when(
@@ -228,6 +229,10 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
             ->when(
                 $to,
                 fn ($q) => $q->whereDate('date', '<=', $to)
+            )
+            ->when(
+                $departmentId,
+                fn ($q) => $q->where('dep_id', $departmentId)
             )
             ->selectRaw("
                 DATE_FORMAT(date,'%Y-%m') as month,
@@ -241,11 +246,12 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
     public function expensesTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
-        return OperationalExpense::query()
+        return OperationalExpense::withoutGlobalScopes()
             ->whereHas('department', function ($q) use ($clinicId) {
-                $q->where('clinic_id', $clinicId);
+                $q->withoutGlobalScopes()->where('clinic_id', $clinicId);
             })
             ->when(
                 $from,
@@ -254,6 +260,10 @@ class FinancialAnalyticsRepository implements FinancialAnalyticsRepositoryInterf
             ->when(
                 $to,
                 fn ($q) => $q->whereDate('expense_date', '<=', $to)
+            )
+            ->when(
+                $departmentId,
+                fn ($q) => $q->where('department_id', $departmentId)
             )
             ->selectRaw("
                 DATE_FORMAT(expense_date,'%Y-%m') as month,

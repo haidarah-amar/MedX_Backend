@@ -67,18 +67,15 @@ class FinancialAnalyticsService implements FinancialAnalyticsServiceInterface
             $departmentId
         );
 
-        $total = max((int) $stats->total, 1);
+        $total = max((int) ($stats->total ?? 0), 1);
 
         return [
-            'new_patients' => (int) $stats->new_count,
-
-            'returning_patients' => (int) $stats->returning_count,
-
+            'new_patients' => (int) ($stats->new_count ?? 0),
+            'returning_patients' => (int) ($stats->returning_count ?? 0),
             'new_percentage' =>
-                round(($stats->new_count / $total) * 100, 2),
-
+                round((($stats->new_count ?? 0) / $total) * 100, 2),
             'returning_percentage' =>
-                round(($stats->returning_count / $total) * 100, 2),
+                round((($stats->returning_count ?? 0) / $total) * 100, 2),
         ];
     }
 
@@ -95,92 +92,100 @@ class FinancialAnalyticsService implements FinancialAnalyticsServiceInterface
             $departmentId
         );
 
-        $total = max((int) $stats->total, 1);
+        $total = max((int) ($stats->total ?? 0), 1);
 
         return [
-            'total' => (int) $stats->total,
-
-            'completed' => (int) $stats->completed_count,
-
-            'canceled' => (int) $stats->canceled_count,
-
+            'total' => (int) ($stats->total ?? 0),
+            'completed' => (int) ($stats->completed_count ?? 0),
+            'canceled' => (int) ($stats->canceled_count ?? 0),
             'completion_rate' =>
-                round(($stats->completed_count / $total) * 100, 2),
-
+                round((($stats->completed_count ?? 0) / $total) * 100, 2),
             'cancellation_rate' =>
-                round(($stats->canceled_count / $total) * 100, 2),
+                round((($stats->canceled_count ?? 0) / $total) * 100, 2),
         ];
     }
 
     public function departmentBreakdown(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
         return $this->repository->departmentBreakdown(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         );
     }
 
     public function revenueTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
         return $this->repository->revenueTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         );
     }
 
     public function doctorCostTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
         return $this->repository->doctorCostTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         );
     }
 
     public function expensesTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
         return $this->repository->expensesTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         );
     }
 
     public function profitTrend(
         int $clinicId,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $departmentId = null
     ) {
         $revenues = $this->repository->revenueTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         );
 
         $expenses = $this->repository->expensesTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         )->keyBy('month');
 
         $doctorCosts = $this->repository->doctorCostTrend(
             $clinicId,
             $from,
-            $to
+            $to,
+            $departmentId
         )->keyBy('month');
 
         return $revenues->map(function ($row) use (
@@ -195,7 +200,6 @@ class FinancialAnalyticsService implements FinancialAnalyticsServiceInterface
 
             return [
                 'month' => $row->month,
-
                 'profit' =>
                     $row->revenue
                     - $doctorCost
