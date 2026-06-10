@@ -22,7 +22,7 @@ class ClinicController extends Controller
 
         return response()->json([
             'message' => __('messages.clinic_registered'),
-            'clinic' => $clinic
+            'clinic' => $clinic,
         ], 201);
     }
 
@@ -33,13 +33,19 @@ class ClinicController extends Controller
 
         if ($result === null) {
             return response()->json([
-                'error' => __('messages.unauthorized')
+                'error' => __('messages.unauthorized'),
             ], 401);
         }
 
         if ($result === false) {
             return response()->json([
-                'error' => __('messages.clinic_not_approved')
+                'error' => __('messages.clinic_not_approved'),
+            ], 403);
+        }
+
+        if ($result === 'inactive') {
+            return response()->json([
+                'error' => __('messages.clinic_not_working'),
             ], 403);
         }
 
@@ -50,14 +56,14 @@ class ClinicController extends Controller
     {
         $logout = $this->clinicService->logout();
 
-        if (!$logout) {
+        if (! $logout) {
             return response()->json([
-                'message' => __('messages.token_not_found')
+                'message' => __('messages.token_not_found'),
             ], 400);
         }
 
         return response()->json([
-            'message' => __('messages.clinic_logout')
+            'message' => __('messages.clinic_logout'),
         ]);
     }
 
@@ -78,7 +84,7 @@ class ClinicController extends Controller
 
         return response()->json([
             'message' => __('messages.clinic_updated'),
-            'clinic' => $updatedClinic
+            'clinic' => $updatedClinic,
         ]);
     }
 
@@ -91,7 +97,7 @@ class ClinicController extends Controller
 
         return response()->json([
             'message' => __('messages.clinic_status_updated'),
-            'is_active' => $updatedClinic->is_active
+            'is_active' => $updatedClinic->is_active,
         ]);
     }
 
@@ -112,7 +118,7 @@ class ClinicController extends Controller
 
         return response()->json([
             'message' => __('messages.images_uploaded'),
-            'data' => $images
+            'data' => $images,
         ]);
     }
 }

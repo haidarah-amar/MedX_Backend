@@ -14,15 +14,14 @@ class ClinicService implements ClinicServiceInterface
     public function register(array $data)
     {
         if (isset($data['logo'])) {
-        $data['logo'] = $data['logo']->store('clinics/logos', 'public');
-    }  else {
-        $data['logo'] = 'defaults/clinic-logo.png';
-    }
+            $data['logo'] = $data['logo']->store('clinics/logos', 'public');
+        } else {
+            $data['logo'] = 'defaults/clinic-logo.png';
+        }
 
-
-    if (isset($data['owner_idphoto'])) {
-        $data['owner_idphoto'] = $data['owner_idphoto']->store('clinics/owners', 'public');
-    }
+        if (isset($data['owner_idphoto'])) {
+            $data['owner_idphoto'] = $data['owner_idphoto']->store('clinics/owners', 'public');
+        }
 
         return $this->clinicRepository->create($data);
     }
@@ -42,6 +41,11 @@ class ClinicService implements ClinicServiceInterface
         return $this->clinicRepository->getAuthenticatedClinic();
     }
 
+    public function getAll()
+    {
+        return $this->clinicRepository->all();
+    }
+
     public function update(int $id, array $data)
     {
         return $this->clinicRepository->update($id, $data);
@@ -50,6 +54,26 @@ class ClinicService implements ClinicServiceInterface
     public function activate(int $id)
     {
         return $this->clinicRepository->activateClinic($id);
+    }
+
+    public function approve(int $id)
+    {
+        return $this->clinicRepository->approve($id);
+    }
+
+    public function reject(int $id, ?string $reason = null)
+    {
+        return $this->clinicRepository->reject($id, $reason);
+    }
+
+    public function stop(int $id)
+    {
+        return $this->clinicRepository->stop($id);
+    }
+
+    public function start(int $id)
+    {
+        return $this->clinicRepository->start($id);
     }
 
     public function uploadImages(int $clinicId, array $images)

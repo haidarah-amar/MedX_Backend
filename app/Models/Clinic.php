@@ -3,14 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Clinic extends Authenticatable implements JWTSubject
 {
     use HasFactory;
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_REJECTED = 'rejected';
+
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'is_approved' => 'boolean',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function getJWTIdentifier()
     {
@@ -55,5 +69,15 @@ class Clinic extends Authenticatable implements JWTSubject
     public function operationalExpenses()
     {
         return $this->hasMany(OperationalExpense::class, 'clinic_id');
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === self::STATUS_APPROVED && $this->is_approved;
+    }
+
+    public function isWorking(): bool
+    {
+        return $this->isApproved() && $this->is_active;
     }
 }

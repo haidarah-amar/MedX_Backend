@@ -17,7 +17,7 @@ interface AppointmentServiceInterface
 
     public function complete(Appointment $appointment, array $data);
 
-    public function updateDoctorNotes( int $appointmentId, string $doctorNotes);
+    public function update( Appointment $appointment, array $data);
 
 
 }

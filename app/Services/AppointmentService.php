@@ -34,21 +34,21 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function createForUser(User $user, array $data)
     {
-        
-        $clinic_id = Department::findOrFail($data['dep_id'])->clinic_id;
-        $doctor_hourly_rate=$hourlyRate = DB::table('departments_doctors')
-        ->where('doctor_id', $data['doctor_id'])
-        ->where('clinic_id', $clinic_id)
-        ->value('hourly_rate');
-        $clinic_percentage=Clinic::findOrFail($clinic_id)->percentage;
 
-        $fee = $doctor_hourly_rate + ($doctor_hourly_rate * $clinic_percentage /100);
+        $clinic_id = Department::findOrFail($data['dep_id'])->clinic_id;
+        $doctor_hourly_rate = $hourlyRate = DB::table('departments_doctors')
+            ->where('doctor_id', $data['doctor_id'])
+            ->where('clinic_id', $clinic_id)
+            ->value('hourly_rate');
+        $clinic_percentage = Clinic::findOrFail($clinic_id)->percentage;
+
+        $fee = $doctor_hourly_rate + ($doctor_hourly_rate * $clinic_percentage / 100);
 
         $is_returning = DB::table('appointments')
-        ->where('user_id', $user->id)
-        ->where('clinic_id', $clinic_id)
-        ->where('status', 'completed') 
-        ->exists();
+            ->where('user_id', $user->id)
+            ->where('clinic_id', $clinic_id)
+            ->where('status', 'completed')
+            ->exists();
 
         $data['is_returning'] = $is_returning;
         $data['doctor_cost'] = $doctor_hourly_rate;
@@ -74,7 +74,7 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function complete(Appointment $appointment, array $data)
     {
-        return $this->appointmentRepository->complete($appointment, ['status' => 'completed']   );
+        return $this->appointmentRepository->complete($appointment, ['status' => 'completed']);
 
     }
 
@@ -83,9 +83,9 @@ class AppointmentService implements AppointmentServiceInterface
         abort_if($appointment->user_id !== $user->id, 403, 'Forbidden.');
     }
 
-    public function updateDoctorNotes( int $appointmentId, string $doctorNotes )
-{
-    return $this->appointmentRepository
-        ->updateDoctorNotes($appointmentId, $doctorNotes);
-}
+    public function update(Appointment $appointment, array $data)
+    {
+        return $this->appointmentRepository
+            ->update($appointment, $data);
+    }
 }

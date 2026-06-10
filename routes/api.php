@@ -1,9 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminControllers\SuperAdminController;
 use App\Http\Controllers\ClinicControllers\ClinicController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserControllers\AuthController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
 use App\Http\Controllers\FinancialControllers\FinancialDashboardController;
@@ -11,6 +9,8 @@ use App\Http\Controllers\FinancialControllers\FinancialExportController;
 use App\Http\Controllers\FinancialControllers\FinancialTrendController;
 use App\Http\Controllers\FinancialControllers\OperationalExpenseController;
 use App\Http\Controllers\UserControllers\AppointmentController;
+use App\Http\Controllers\UserControllers\AuthController;
+use Illuminate\Support\Facades\Route;
 
 // User Auth
 Route::prefix('auth')->group(function () {
@@ -25,7 +25,6 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::get('/', [AuthController::class, 'profile']);
     Route::post('/update', [AuthController::class, 'updateProfile']);
 
-
     // Appointments
     Route::get('appointments', [AppointmentController::class, 'index']);
     Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
@@ -33,6 +32,18 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::patch('appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
     Route::patch('appointments/{appointment}', [AppointmentController::class, 'update']);
+});
+
+Route::prefix('admin')->group(function () {
+    Route::post('login', [SuperAdminController::class, 'login']);
+
+    Route::middleware(['auth:api', 'super.admin'])->group(function () {
+        Route::get('clinics', [SuperAdminController::class, 'clinics']);
+        Route::patch('clinics/{clinicId}/approve', [SuperAdminController::class, 'approveClinic']);
+        Route::patch('clinics/{clinicId}/reject', [SuperAdminController::class, 'rejectClinic']);
+        Route::patch('clinics/{clinicId}/stop', [SuperAdminController::class, 'stopClinic']);
+        Route::patch('clinics/{clinicId}/start', [SuperAdminController::class, 'startClinic']);
+    });
 });
 
 Route::prefix('clinics/management')->group(function () {
@@ -44,9 +55,12 @@ Route::prefix('clinics/management')->group(function () {
 
         Route::get('/logout', [ClinicController::class, 'logout']);
         Route::get('/show', [ClinicController::class, 'show']);
-        Route::post('/update', [ClinicController::class, 'update']);
-        Route::post('/activate', [ClinicController::class, 'activate']);
-        Route::post('/upload_images', [ClinicController::class, 'uploadImage']);
+
+        Route::middleware('clinic.working')->group(function () {
+            Route::post('/update', [ClinicController::class, 'update']);
+            Route::post('/activate', [ClinicController::class, 'activate']);
+            Route::post('/upload_images', [ClinicController::class, 'uploadImage']);
+        });
     });
 });
 
@@ -114,5 +128,4 @@ Route::prefix('financial/dashboard')
         Route::get('/departments', 'departments');
     });
 
-
-Route::get('/financial/export',[FinancialExportController::class, 'export']);
+Route::get('/financial/export', [FinancialExportController::class, 'export']);

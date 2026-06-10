@@ -24,5 +24,13 @@ interface ClinicRepositoryInterface
 
     public function activateClinic(int $id);
 
+    public function approve(int $id);
+
+    public function reject(int $id, ?string $reason = null);
+
+    public function stop(int $id);
+
+    public function start(int $id);
+
     public function uploadImages(int $clinicId, array $images);
 }

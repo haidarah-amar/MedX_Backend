@@ -17,12 +17,12 @@ class ClinicRepository implements ClinicRepositoryInterface
 
     public function findByEmail(string $email)
     {
-        return Clinic::findOrFail('email', $email)->first();
+        return Clinic::where('email', $email)->first();
     }
 
     public function all()
     {
-        return Clinic::all()->paginate(10);
+        return Clinic::latest()->paginate(10);
     }
 
     public function create(array $data)
@@ -52,31 +52,35 @@ class ClinicRepository implements ClinicRepositoryInterface
         return $this->findById($id)->delete();
     }
 
- public function login(array $credentials)
-{
-    $clinic = Clinic::whereEmail($credentials['email'])->first();
+    public function login(array $credentials)
+    {
+        $clinic = Clinic::whereEmail($credentials['email'])->first();
 
-    if (!$clinic || !Hash::check($credentials['password'], $clinic->password)) {
-        return null;
+        if (! $clinic || ! Hash::check($credentials['password'], $clinic->password)) {
+            return null;
+        }
+
+        if (! $clinic->isApproved()) {
+            return false;
+        }
+
+        if (! $clinic->is_active) {
+            return 'inactive';
+        }
+
+        $token = JWTAuth::fromUser($clinic);
+
+        return [
+            'token' => $token,
+            'clinic' => $clinic,
+        ];
     }
-
-    if (!$clinic->is_approved) {
-        return false;
-    }
-
-    $token = JWTAuth::fromUser($clinic);
-
-    return [
-        'token' => $token,
-        'clinic' => $clinic
-    ];
-}
 
     public function logout()
     {
         $token = JWTAuth::getToken();
 
-        if (!$token) {
+        if (! $token) {
             return false;
         }
 
@@ -94,11 +98,63 @@ class ClinicRepository implements ClinicRepositoryInterface
     {
         $clinic = $this->findById($id);
 
-        $clinic->is_active = !$clinic->is_active;
+        $clinic->is_active = ! $clinic->is_active;
 
         $clinic->save();
 
         return $clinic;
+    }
+
+    public function approve(int $id)
+    {
+        $clinic = $this->findById($id);
+
+        $clinic->update([
+            'is_approved' => true,
+            'approval_status' => Clinic::STATUS_APPROVED,
+            'rejection_reason' => null,
+            'is_active' => true,
+        ]);
+
+        return $clinic->refresh();
+    }
+
+    public function reject(int $id, ?string $reason = null)
+    {
+        $clinic = $this->findById($id);
+
+        $clinic->update([
+            'is_approved' => false,
+            'approval_status' => Clinic::STATUS_REJECTED,
+            'rejection_reason' => $reason,
+            'is_active' => false,
+        ]);
+
+        return $clinic->refresh();
+    }
+
+    public function stop(int $id)
+    {
+        $clinic = $this->findById($id);
+
+        $clinic->update(['is_active' => false]);
+
+        return $clinic->refresh();
+    }
+
+    public function start(int $id)
+    {
+        $clinic = $this->findById($id);
+
+        abort_if(
+            ! $clinic->isApproved(),
+            422,
+            __('messages.clinic_must_be_approved')
+        );
+
+        $clinic->update(['is_active' => true]);
+
+        return $clinic->refresh();
     }
 
     public function uploadImages(int $clinicId, array $images)

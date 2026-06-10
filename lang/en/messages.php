@@ -8,6 +8,12 @@ return [
     'clinic_status_updated' => 'Clinic status updated successfully',
     'clinic_logout' => 'Logged out successfully',
     'clinic_not_approved' => 'Account has not been approved yet',
+    'clinic_not_working' => 'Clinic is not allowed to work right now',
+    'clinic_must_be_approved' => 'Clinic must be approved before it can start working',
+    'clinic_approved' => 'Clinic approved successfully',
+    'clinic_rejected' => 'Clinic rejected successfully',
+    'clinic_stopped' => 'Clinic stopped successfully',
+    'clinic_started' => 'Clinic started successfully',
 
     // Department
     'departments_fetched' => 'Departments retrieved successfully',
@@ -39,6 +45,7 @@ return [
 
     // Auth
     'unauthorized' => 'Invalid credentials',
+    'forbidden' => 'You do not have permission to perform this action',
     'token_not_found' => 'Token not found',
 
 ];

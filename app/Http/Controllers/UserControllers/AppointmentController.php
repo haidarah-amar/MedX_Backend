@@ -60,15 +60,15 @@ class AppointmentController extends Controller
         return response()->json($appointment);
     }
 
-    public function updateDoctorNotes(UpdateDoctorNotesRequest $request, int $appointmentId)
+    public function update(UpdateAppointmentRequest $request, Appointment $appointment)
 {
-    $appointment = $this->appointmentService->updateDoctorNotes(
-        $appointmentId,
-        $request->validated()['doctor_notes']
+    $appointment = $this->appointmentService->update(
+        $appointment,
+        $request->validated()
     );
 
     return response()->json([
-        'message' => 'تم حفظ ملاحظات الطبيب',
+        'message' => 'تم تحديث بيانات الموعد بنجاح ',
         'data' => $appointment
     ]);
 }

@@ -15,6 +15,5 @@ interface AppointmentRepositoryInterface
 
     public function complete(Appointment $appointment,array $status);
 
-    public function updateDoctorNotes( int $appointmentId, string $doctorNotes);
 
 }
