@@ -10,6 +10,8 @@ use App\Http\Controllers\FinancialControllers\FinancialTrendController;
 use App\Http\Controllers\FinancialControllers\OperationalExpenseController;
 use App\Http\Controllers\UserControllers\AppointmentController;
 use App\Http\Controllers\UserControllers\AuthController;
+use App\Http\Controllers\UserControllers\FcmTokenController;
+use App\Http\Controllers\UserControllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // User Auth
@@ -32,6 +34,14 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::patch('appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
     Route::patch('appointments/{appointment}', [AppointmentController::class, 'update']);
+
+    // Firebase notifications
+    Route::post('fcm-tokens', [FcmTokenController::class, 'store']);
+    Route::delete('fcm-tokens', [FcmTokenController::class, 'destroy']);
+    Route::get('notifications', [NotificationController::class, 'index']);
+    Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 });
 
 Route::prefix('admin')->group(function () {
