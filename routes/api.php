@@ -65,6 +65,7 @@ Route::prefix('clinics/management')->group(function () {
 
         Route::get('/logout', [ClinicController::class, 'logout']);
         Route::get('/show', [ClinicController::class, 'show']);
+        Route::get('/', [ClinicController::class, 'index']);
 
         Route::middleware('clinic.working')->group(function () {
             Route::post('/update', [ClinicController::class, 'update']);
@@ -139,3 +140,8 @@ Route::prefix('financial/dashboard')
     });
 
 Route::get('/financial/export', [FinancialExportController::class, 'export']);
+
+Route::prefix('favorites')->group(function () {
+    Route::post('/toggle/{clinicId}', [\App\Http\Controllers\FavoriteController::class, 'toggle']);
+    Route::get('/', [\App\Http\Controllers\FavoriteController::class, 'getAllFavoritesByUserId']);
+});

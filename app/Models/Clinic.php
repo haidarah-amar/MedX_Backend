@@ -80,4 +80,9 @@ class Clinic extends Authenticatable implements JWTSubject
     {
         return $this->isApproved() && $this->is_active;
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'clinic_id');
+    }
 }

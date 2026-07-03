@@ -121,4 +121,13 @@ class ClinicController extends Controller
             'data' => $images,
         ]);
     }
+
+    public function index()
+    {
+        $clinics = $this->clinicService->getAll();
+
+        return response()->json([
+            'data' => $clinics,
+        ] , 200);
+    }
 }

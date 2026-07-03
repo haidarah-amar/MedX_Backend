@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Clinic;
 use App\Models\ClinicImage;
+use App\Models\Department;
 use App\Repositories\Contracts\ClinicRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;

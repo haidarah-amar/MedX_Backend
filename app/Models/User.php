@@ -90,4 +90,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->role === self::ROLE_SUPER_ADMIN;
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
+    }
 }
