@@ -66,6 +66,12 @@ public function updateHourlyRate(int $clinicId, array $data)
     return $this->doctorRepository
         ->getClinicDoctors($clinicId);
 }
+
+    public function getDoctorsByDepartment(int $departmentId)
+{
+    return $this->doctorRepository->getDoctorsByDepartment($departmentId);
+}
+
     public function getAllDoctors(): LengthAwarePaginator
     {
         return $this->doctorRepository->getAllDoctors();

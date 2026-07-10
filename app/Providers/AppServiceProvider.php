@@ -30,6 +30,12 @@ use App\Repositories\Contracts\FinancialAnalyticsRepositoryInterface;
 use App\Services\AppointmentService;
 use App\Services\Contracts\AppointmentServiceInterface;
 
+//Document
+use App\Services\Contracts\DocumentServiceInterface;
+use App\Services\DocumentService;
+use App\Repositories\Contracts\DocumentRepositoryInterface;
+use App\Repositories\DocumentRepository;
+
 // User
 use App\Repositories\UserRepository;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -124,6 +130,16 @@ $this->app->bind(
     OperationalExpenseServiceInterface::class,
     OperationalExpenseService::class
 );
+
+$this->app->bind(
+        DocumentServiceInterface::class,
+        DocumentService::class
+    );
+
+    $this->app->bind(
+        DocumentRepositoryInterface::class,
+        DocumentRepository::class
+    );
     }
 
     /**

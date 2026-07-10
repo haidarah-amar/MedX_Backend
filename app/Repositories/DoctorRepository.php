@@ -13,6 +13,13 @@ class DoctorRepository implements DoctorRepositoryInterface
         return Doctor::whereClinicId($clinicId)->get();
     }
 
+    public function getDoctorsByDepartment(int $departmentId)
+    {
+        return Doctor::whereHas('departments', function ($query) use ($departmentId) {
+            $query->where('departments.id', $departmentId);
+        })->get();
+    }
+
     public function findById(int $doctorId): Doctor
     {
         return Doctor::findOrFail($doctorId);

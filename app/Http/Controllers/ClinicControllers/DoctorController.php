@@ -123,6 +123,16 @@ class DoctorController extends Controller
     ], 200);
 }
 
+    public function getDoctorsByDepartment(int $departmentId)
+{
+    $doctors = $this->doctorService->getDoctorsByDepartment($departmentId);
+
+    return response()->json([
+        'message' => __('messages.doctors_fetched'),
+        'data' => $doctors
+    ], 200);
+}
+
 public function uncontract(ContractDoctorRequest $request)
 {
     $clinic = auth('clinic-api')->user();

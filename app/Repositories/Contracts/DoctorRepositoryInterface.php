@@ -33,6 +33,8 @@ interface DoctorRepositoryInterface
     );
     public function getClinicDoctors(int $clinicId);
 
+    public function getDoctorsByDepartment(int $departmentId);
+
     public function getAllDoctors(): LengthAwarePaginator;
 
 }

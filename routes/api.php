@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminControllers\SuperAdminController;
 use App\Http\Controllers\ClinicControllers\ClinicController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
+use App\Http\Controllers\ClinicControllers\DocumentController;
 use App\Http\Controllers\FinancialControllers\FinancialDashboardController;
 use App\Http\Controllers\FinancialControllers\FinancialExportController;
 use App\Http\Controllers\FinancialControllers\FinancialTrendController;
@@ -16,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 // User Auth
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::prefix('profile')->middleware('auth:api')->group(function () {
@@ -60,12 +61,13 @@ Route::prefix('clinics/management')->group(function () {
 
     Route::post('/register', [ClinicController::class, 'store']);
     Route::post('/login', [ClinicController::class, 'login']);
+    Route::get('/', [ClinicController::class, 'index']);
 
     Route::middleware('auth:clinic-api')->group(function () {
 
         Route::get('/logout', [ClinicController::class, 'logout']);
         Route::get('/show', [ClinicController::class, 'show']);
-        Route::get('/', [ClinicController::class, 'index']);
+        
 
         Route::middleware('clinic.working')->group(function () {
             Route::post('/update', [ClinicController::class, 'update']);
@@ -90,6 +92,7 @@ Route::prefix('clinics/doctors')->controller(DoctorController::class)->group(fun
     Route::post('/', 'store');
     Route::get('/serial/{serial}', 'findBySerial');
     Route::get('/contracted', 'clinicDoctors');
+    Route::get('/department/{departmentId}', 'getDoctorsByDepartment');
     Route::post('/contract', 'contract');
     Route::post('/update_hourly_rate', 'updateHourlyRate');
     Route::post('/uncontract', 'uncontract');
@@ -111,6 +114,22 @@ Route::prefix('financial/expenses')
         Route::put('/{operationalExpense}', 'update');
 
         Route::delete('/{operationalExpense}', 'destroy');
+    });
+
+Route::prefix('clinic/document')
+    ->controller(DocumentController::class)
+    ->middleware('auth:clinic-api')
+    ->group(function () {
+
+        Route::get('/', 'index');
+
+        Route::post('/', 'store');
+
+        Route::get('/{id}', 'show');
+
+        Route::post('/{id}', 'update');
+
+        Route::delete('/{id}', 'destroy');
     });
 
 Route::prefix('financial/trends')

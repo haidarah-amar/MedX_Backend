@@ -22,6 +22,7 @@ interface DoctorServiceInterface
 
     public function getClinicDoctors(int $clinicId);
 
+    public function getDoctorsByDepartment(int $departmentId);
     public function getAllDoctors(): LengthAwarePaginator;
     public function uncontractDoctor(int $clinicId, array $data): bool;
 }
