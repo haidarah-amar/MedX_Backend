@@ -34,7 +34,7 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::post('appointments', [AppointmentController::class, 'store']);
     Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::patch('appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
-    Route::patch('appointments/{appointment}', [AppointmentController::class, 'update']);
+    Route::put('appointments/{appointment}', [AppointmentController::class, 'update']);
 
     // Firebase notifications
     Route::post('fcm-tokens', [FcmTokenController::class, 'store']);
@@ -67,7 +67,7 @@ Route::prefix('clinics/management')->group(function () {
 
         Route::get('/logout', [ClinicController::class, 'logout']);
         Route::get('/show', [ClinicController::class, 'show']);
-        
+
 
         Route::middleware('clinic.working')->group(function () {
             Route::post('/update', [ClinicController::class, 'update']);

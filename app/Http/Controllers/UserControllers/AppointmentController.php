@@ -61,15 +61,15 @@ class AppointmentController extends Controller
     }
 
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
-{
-    $appointment = $this->appointmentService->update(
-        $appointment,
-        $request->validated()
-    );
+    {
+        $appointment = $this->appointmentService->update(
+            $appointment,
+            $request->validated()
+        );
 
-    return response()->json([
-        'message' => 'تم تحديث بيانات الموعد بنجاح ',
-        'data' => $appointment
-    ]);
-}
+        return response()->json([
+            'message' => 'تم تحديث بيانات الموعد بنجاح ',
+            'data' => $appointment
+        ]);
+    }
 }

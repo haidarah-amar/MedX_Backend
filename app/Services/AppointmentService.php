@@ -26,7 +26,7 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function getForUser(User $user, Appointment $appointment)
     {
-        $this->authorizeUser($user, $appointment);
+        // $this->authorizeUser($user, $appointment);
 
         return $appointment->load(['doctor', 'department.clinic']);
     }
@@ -87,6 +87,12 @@ class AppointmentService implements AppointmentServiceInterface
         $data['status'] = 'booked';
         $data['time'] = $data['date'] . ' ' . $data['time'] . ':00';
         $data['appointment_fee'] = $fee;
+
+        $clinic = Clinic::findOrFail($clinic_id);
+
+        if (!$clinic || $clinic->approval_status != "approved") {
+            abort(422, 'The clinic is not available for appointments.');
+        }
 
         $appointment = $this->appointmentRepository->create($data);
 
