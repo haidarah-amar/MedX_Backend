@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
             'gender'       => 'nullable|in:female,male',
             'birthdate'    => 'nullable|date',
             'address'      => 'nullable|string|max:255',
-            'id_passport'  => 'nullable|string|max:255',
+            'id_passport'  => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'password'     => 'required|string|min:8|confirmed',
         ];
     }
