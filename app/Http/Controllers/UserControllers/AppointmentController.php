@@ -9,6 +9,9 @@ use App\Services\Contracts\AppointmentServiceInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateAppointmentRequest;
 use App\Http\Requests\UpdateDoctorNotesRequest;
+use App\Models\Clinic;
+use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AppointmentController extends Controller
 {
@@ -17,12 +20,38 @@ class AppointmentController extends Controller
     ) {
     }
 
-    public function index(Request $request)
-    {
+   public function index(Request $request)
+{
+    $payload = JWTAuth::parseToken()->getPayload();
+
+    $accountType = $payload->get('account_type');
+
+    if ($accountType === 'clinic') {
+        $clinicId = (int) $payload->get('sub');
+
         return response()->json(
-            $this->appointmentService->getUserAppointments($request->user(), $request->status)
+            $this->appointmentService->getClinicAppointments(
+                $clinicId,
+                $request->status
+            )
         );
     }
+
+    if ($accountType === 'user') {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        return response()->json(
+            $this->appointmentService->getUserAppointments(
+                $user,
+                $request->status
+            )
+        );
+    }
+
+    return response()->json([
+        'message' => 'Invalid account type.'
+    ], 401);
+}
 
     public function show(Request $request, Appointment $appointment)
     {

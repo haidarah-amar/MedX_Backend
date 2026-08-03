@@ -180,4 +180,9 @@ class AppointmentService implements AppointmentServiceInterface
             ]
         );
     }
+
+    public function getClinicAppointments( int $clinicId, ?string $status = null)
+    {
+    return $this->appointmentRepository ->paginateForClinic($clinicId, $status);
+    }
 }

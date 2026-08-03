@@ -15,5 +15,6 @@ interface AppointmentRepositoryInterface
 
     public function complete(Appointment $appointment,array $status);
 
+    public function paginateForClinic(int $clinicId, ?string $status = null);
 
 }

@@ -28,13 +28,6 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::get('/', [AuthController::class, 'profile']);
     Route::post('/update', [AuthController::class, 'updateProfile']);
 
-    // Appointments
-    Route::get('appointments', [AppointmentController::class, 'index']);
-    Route::get('appointments/{appointment}', [AppointmentController::class, 'show']);
-    Route::post('appointments', [AppointmentController::class, 'store']);
-    Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
-    Route::patch('appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
-    Route::put('appointments/{appointment}', [AppointmentController::class, 'update']);
 
     // Firebase notifications
     Route::post('fcm-tokens', [FcmTokenController::class, 'store']);
@@ -44,6 +37,8 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
     Route::patch('notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 });
+
+
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [SuperAdminController::class, 'login']);
@@ -55,6 +50,15 @@ Route::prefix('admin')->group(function () {
         Route::patch('clinics/{clinicId}/stop', [SuperAdminController::class, 'stopClinic']);
         Route::patch('clinics/{clinicId}/start', [SuperAdminController::class, 'startClinic']);
     });
+});
+
+Route::prefix('appointments')->controller(AppointmentController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{appointment}', 'show');
+    Route::post('/', 'store');
+    Route::patch('/{appointment}/cancel', 'cancel');
+    Route::patch('/{appointment}/complete', 'complete');
+    Route::put('/{appointment}', 'update');
 });
 
 Route::prefix('clinics/management')->group(function () {

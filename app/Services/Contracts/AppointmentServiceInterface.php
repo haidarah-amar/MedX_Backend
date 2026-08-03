@@ -19,5 +19,7 @@ interface AppointmentServiceInterface
 
     public function update( Appointment $appointment, array $data);
 
+    public function getClinicAppointments(int $clinicId, ?string $status = null);
+
 
 }

@@ -42,4 +42,24 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         return $appointment;
     }
 
+    public function paginateForClinic( int $clinicId, ?string $status = null) 
+    {
+    return Appointment::query()
+        ->where('clinic_id', $clinicId)
+        ->with([
+            'user',
+            'doctor',
+            'department.clinic',
+        ])
+        ->when(
+            $status,
+            fn ($query) => $query->where(
+                'status',
+                $status
+            )
+        )
+        ->orderByDesc('date')
+        ->paginate(15);
+}
+
 }

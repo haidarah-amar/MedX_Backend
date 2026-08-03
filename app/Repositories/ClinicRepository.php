@@ -69,7 +69,7 @@ class ClinicRepository implements ClinicRepositoryInterface
             return 'inactive';
         }
 
-        $token = JWTAuth::fromUser($clinic);
+        $token = JWTAuth::claims(['account_type' => 'clinic',])->fromUser($clinic);
 
         return [
             'token' => $token,
