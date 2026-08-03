@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Appointment;
 use App\Repositories\Contracts\DepartmentRepositoryInterface;
 use App\Services\Contracts\DepartmentServiceInterface;
+use Carbon\Carbon;
 
 class DepartmentService implements DepartmentServiceInterface
 {
@@ -36,10 +38,22 @@ class DepartmentService implements DepartmentServiceInterface
         return $this->departmentRepository->delete($id);
     }
 
-    public function getAllForClinic(int $clinicId)
-    {
-        return $this->departmentRepository->allForClinic($clinicId);
-    }
+public function getAllForClinic(int $clinicId)
+{
+    $departments = $this->departmentRepository
+        ->allForClinic($clinicId);
+
+    return $departments->map(function ($department) {
+
+        $todayAppointmentsCount = Appointment::whereDepId($department->id)
+        ->whereDate('date',Carbon::today())
+        ->count();
+
+        $department->today_appointments_count = $todayAppointmentsCount;
+
+        return $department;
+    });
+}
 
     public function getByIdForClinic(int $id)
     {
@@ -84,4 +98,15 @@ class DepartmentService implements DepartmentServiceInterface
 
         return $this->departmentRepository->deleteForClinic($id, $clinic->id);
     }
+
+    public function getDepartmentStatistics(
+    int $clinicId,
+    int $departmentId
+): array {
+    return $this->departmentRepository
+        ->getDepartmentStatistics(
+            $clinicId,
+            $departmentId
+        );
+}
 }

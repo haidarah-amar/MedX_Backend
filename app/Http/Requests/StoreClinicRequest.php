@@ -33,11 +33,11 @@ class StoreClinicRequest extends FormRequest
 
             'phone_number' => ['required','string','regex:/^09[0-9]{8}$/'],
 
-            'working_hours' => 'required|integer|min:1',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
 
             'is_active' => 'required|boolean',
-            // 'is_24h' => 'required|boolean',
-
+            
             'latitude' => 'required|string',
             'longitude' => 'required|string',
 

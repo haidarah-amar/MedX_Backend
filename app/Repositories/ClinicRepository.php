@@ -13,17 +13,17 @@ class ClinicRepository implements ClinicRepositoryInterface
 {
     public function findById(int $id)
     {
-        return Clinic::findOrFail($id);
+        return Clinic::findOrFail($id)->except(['password' , 'created_at' , 'updated_at']);
     }
 
     public function findByEmail(string $email)
     {
-        return Clinic::where('email', $email)->first();
+        return Clinic::whereEmail($email)->first()->except(['password' , 'created_at' , 'updated_at']);
     }
 
     public function all()
     {
-        return Clinic::latest()->paginate(10);
+        return Clinic::latest()->paginate(10)->except(['password' , 'created_at' , 'updated_at']);
     }
 
     public function create(array $data)
@@ -32,7 +32,7 @@ class ClinicRepository implements ClinicRepositoryInterface
             $data['password'] = bcrypt($data['password']);
         }
 
-        return Clinic::create($data);
+        return Clinic::create($data)->except(['password' , 'created_at' , 'updated_at']);
     }
 
     public function update(int $id, array $data)
@@ -45,7 +45,7 @@ class ClinicRepository implements ClinicRepositoryInterface
 
         $clinic->update($data);
 
-        return $clinic;
+        return $clinic->except(['password' , 'created_at' , 'updated_at']);
     }
 
     public function delete(int $id)

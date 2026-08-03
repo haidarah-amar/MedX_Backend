@@ -17,7 +17,8 @@ class DoctorCostTrendSheet implements
     public function __construct(
         private int $clinicId,
         private ?string $from,
-        private ?string $to
+        private ?string $to,
+        private ?int $departmentId
     ) {}
 
     public function collection()
@@ -27,7 +28,8 @@ class DoctorCostTrendSheet implements
         )->doctorCostTrend(
             $this->clinicId,
             $this->from,
-            $this->to
+            $this->to,
+            $this->departmentId
         );
     }
 

@@ -23,4 +23,6 @@ interface DepartmentServiceInterface
     public function updateForClinic(int $id, array $data);
 
     public function deleteForClinic(int $id);
+
+    public function getDepartmentStatistics(int $clinicId, int $departmentId): array;
 }

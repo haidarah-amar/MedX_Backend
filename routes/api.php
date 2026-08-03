@@ -85,13 +85,17 @@ Route::prefix('clinics/departments')->controller(DepartmentController::class)->g
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
 });
+Route::get(
+    '/clinics/{clinicId}/departments/{departmentId}/statistics',
+    [DepartmentController::class, 'statistics']
+);
 
 Route::prefix('clinics/doctors')->controller(DoctorController::class)->group(function () {
 
     Route::get('/', 'index');
     Route::post('/', 'store');
     Route::get('/serial/{serial}', 'findBySerial');
-    Route::get('/contracted', 'clinicDoctors');
+    Route::get('/contracted/{clinicId}', 'clinicDoctors');
     Route::get('/department/{departmentId}', 'getDoctorsByDepartment');
     Route::post('/contract', 'contract');
     Route::post('/update_hourly_rate', 'updateHourlyRate');

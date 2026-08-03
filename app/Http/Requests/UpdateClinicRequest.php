@@ -32,11 +32,11 @@ class UpdateClinicRequest extends FormRequest
 
             'phone_number' => ['sometimes','string','regex:/^09[0-9]{8}$/'],
 
-            'working_hours' => 'sometimes|integer|min:1',
+            'start_time' => 'sometimes|date_format:H:i',
+            'end_time' => 'sometimes|date_format:H:i|after:start_time',
 
             'is_active' => 'sometimes|boolean',
-            // 'is_24h' => 'sometimes|boolean',
-
+            
             'latitude' => 'sometimes|string',
             'longitude' => 'sometimes|string',
 

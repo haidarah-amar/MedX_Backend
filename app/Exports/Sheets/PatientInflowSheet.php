@@ -38,9 +38,14 @@ class PatientInflowSheet implements
 }
 
     public function headings(): array
-    {
-        return ['Metric', 'Value'];
-    }
+{
+    return [
+        'New Patients',
+        'Returning Patients',
+        'New Percentage',
+        'Returning Percentage',
+    ];
+}
 
     public function title(): string
     {

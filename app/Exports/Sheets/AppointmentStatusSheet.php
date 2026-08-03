@@ -38,9 +38,15 @@ class AppointmentStatusSheet implements
 }
 
     public function headings(): array
-    {
-        return ['Metric', 'Value'];
-    }
+{
+    return [
+        'Total Appointments',
+        'Completed',
+        'Canceled',
+        'Completion Rate',
+        'Cancellation Rate',
+    ];
+}
 
     public function title(): string
     {

@@ -35,30 +35,35 @@ class FinancialReportExport implements WithMultipleSheets
                 $this->clinicId,
                 $this->from,
                 $this->to,
+                $this->departmentId
                ),
 
             new RevenueTrendSheet(
                 $this->clinicId,
                 $this->from,
                 $this->to,
+                $this->departmentId
                 ),
 
             new DoctorCostTrendSheet(
                 $this->clinicId,
                 $this->from,
                 $this->to,
+                $this->departmentId
                ),
 
             new ExpensesTrendSheet(
                 $this->clinicId,
                 $this->from,
                 $this->to,
+                $this->departmentId
                 ),
 
             new ProfitTrendSheet(
                 $this->clinicId,
                 $this->from,
                 $this->to,
+                $this->departmentId
                 ),
 
             new PatientInflowSheet(

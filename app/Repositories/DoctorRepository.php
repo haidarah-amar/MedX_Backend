@@ -10,7 +10,8 @@ class DoctorRepository implements DoctorRepositoryInterface
 {
     public function allByClinic(int $clinicId): mixed
     {
-        return Doctor::whereClinicId($clinicId)->get();
+        return Doctor::whereClinicId($clinicId)->get()->except(['created_at' , 'updated_at'])
+        ->with();
     }
 
     public function getDoctorsByDepartment(int $departmentId)

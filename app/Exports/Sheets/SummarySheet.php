@@ -39,9 +39,16 @@ class SummarySheet implements
 }
 
     public function headings(): array
-    {
-        return ['Metric', 'Value'];
-    }
+{
+    return [
+        'Revenue',
+        'Doctor Cost',
+        'Expenses',
+        'Operational Cost',
+        'Net Profit',
+        'Margin',
+    ];
+}
 
     public function title(): string
     {

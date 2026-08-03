@@ -110,19 +110,17 @@ class DoctorController extends Controller
         'data' => $doctor
     ], 201);
 }
-    public function clinicDoctors()
+  public function clinicDoctors(int $clinicId)
 {
-    $clinic = auth('clinic-api')->user();
-
-    $doctors = $this->doctorService
-        ->getClinicDoctors($clinic->id);
+    $result = $this->doctorService
+        ->getClinicDoctors($clinicId);
 
     return response()->json([
         'message' => __('messages.clinic_doctors_fetched'),
-        'data' => $doctors
+        'data' => $result['doctors'],
+        'statistics' => $result['statistics'],
     ], 200);
 }
-
     public function getDoctorsByDepartment(int $departmentId)
 {
     $doctors = $this->doctorService->getDoctorsByDepartment($departmentId);

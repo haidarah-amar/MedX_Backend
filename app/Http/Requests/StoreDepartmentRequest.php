@@ -17,6 +17,8 @@ class StoreDepartmentRequest extends FormRequest
             'category_id' => 'required|exists:departments_categories,id',
             'description_en' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'description_ar' => 'required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
+            'location_ar' => 'required|string|max:255',
+            'location_en' => 'required|string|max:255',
         ];
     }
 }

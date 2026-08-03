@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('location_ar');
             $table->string('location_en');
             $table->string('phone_number');
-            $table->integer('working_hours')->default(8);
+            $table->time('start_time')->default('08:00');
+            $table->time('end_time')->default('17:00');
             $table->boolean('is_approved')->default(false);
             $table->boolean('is_active')->default(true);
             $table->string('latitude')->nullable();

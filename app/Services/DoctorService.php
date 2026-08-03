@@ -6,7 +6,9 @@ use App\Models\Clinic;
 use App\Models\Doctor;
 use App\Repositories\Contracts\DoctorRepositoryInterface;
 use App\Services\Contracts\DoctorServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class DoctorService implements DoctorServiceInterface
 {
@@ -61,10 +63,59 @@ public function updateHourlyRate(int $clinicId, array $data)
     );
 }
 
-    public function getClinicDoctors(int $clinicId)
+public function getClinicDoctors(int $clinicId): array
 {
-    return $this->doctorRepository
+    $doctors = $this->doctorRepository
         ->getClinicDoctors($clinicId);
+
+    $clinic = Clinic::findOrFail($clinicId);
+
+    // الوقت الحالي
+    $currentTime = Carbon::now()->format('H:i:s');
+
+    // العدد الكامل للأطباء المرتبطين بالمركز
+    $totalDoctorsCount = DB::table('departments_doctors')
+        ->where('clinic_id', $clinicId)
+        ->distinct('doctor_id')
+        ->count('doctor_id');
+
+    // عدد الأطباء الموجودين حاليًا حسب وقت دوامهم
+    $availableDoctorsCount = DB::table('departments_doctors')
+        ->where('clinic_id', $clinicId)
+        ->where('start_time', '<=', $currentTime)
+        ->where('end_time', '>=', $currentTime)
+        ->distinct('doctor_id')
+        ->count('doctor_id');
+
+    // إضافة fee لكل طبيب
+    $doctors->getCollection()->transform(
+        function ($doctor) use ($clinic) {
+
+            $doctorHourlyRate = $doctor->departments
+                ->first()
+                ->pivot
+                ->hourly_rate;
+
+            $fee = $doctorHourlyRate
+                + (
+                    $doctorHourlyRate
+                    * $clinic->percentage
+                    / 100
+                );
+
+            $doctor->fee = $fee;
+
+            return $doctor;
+        }
+    );
+
+    return [
+        'doctors' => $doctors,
+        'statistics' => [
+            'total_doctors_count' => $totalDoctorsCount,
+            'available_doctors_count' => $availableDoctorsCount,
+        ],
+    ];
 }
 
     public function getDoctorsByDepartment(int $departmentId)

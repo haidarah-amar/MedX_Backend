@@ -2,71 +2,197 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\Clinic;
 use App\Models\Department;
 use App\Models\DepartmentCategory;
+use Illuminate\Database\Seeder;
 
 class DepartmentSeeder extends Seeder
 {
     public function run(): void
     {
         $departments = [
-            
-            ['category' => 'general', 'name_en' => 'General Medicine', 'name_ar' => 'طب عام'],
-            ['category' => 'internal_medicine', 'name_en' => 'Internal Medicine', 'name_ar' => 'باطنية'],
-            ['category' => 'family_medicine', 'name_en' => 'Family Medicine', 'name_ar' => 'طب الأسرة'],
+            [
+                'clinic_email' => 'damascus@medx.sy',
+                'category' => 'internal_medicine',
 
-            ['category' => 'cardiology', 'name_en' => 'Cardiology', 'name_ar' => 'قلبية'],
-            ['category' => 'pulmonology', 'name_en' => 'Pulmonology', 'name_ar' => 'صدرية'],
-            ['category' => 'thoracic', 'name_en' => 'Thoracic Surgery', 'name_ar' => 'جراحة صدر'],
-            ['category' => 'vascular', 'name_en' => 'Vascular Surgery', 'name_ar' => 'جراحة أوعية'],
+                'description_en' =>
+                    'The Internal Medicine Department provides diagnosis and follow-up for common adult medical conditions.',
 
-            ['category' => 'neurology', 'name_en' => 'Neurology', 'name_ar' => 'أعصاب'],
-            ['category' => 'neurosurgery', 'name_en' => 'Neurosurgery', 'name_ar' => 'جراحة أعصاب'],
-            ['category' => 'psychiatry', 'name_en' => 'Psychiatry', 'name_ar' => 'طب نفسي'],
+                'description_ar' =>
+                    'قسم الباطنية بيقدم معاينات وتشخيص ومتابعة للأمراض الشائعة عند البالغين.',
 
-            ['category' => 'ophthalmology', 'name_en' => 'Ophthalmology', 'name_ar' => 'عيون'],
-            ['category' => 'ent', 'name_en' => 'ENT', 'name_ar' => 'أنف أذن حنجرة'],
+                'location_ar' =>
+                    'الطابق الأول - الغرفة 101',
 
-            ['category' => 'orthopedics', 'name_en' => 'Orthopedics', 'name_ar' => 'عظام'],
-            ['category' => 'rheumatology', 'name_en' => 'Rheumatology', 'name_ar' => 'روماتيزم'],
+                'location_en' =>
+                    'First Floor - Room 101',
+            ],
 
-            ['category' => 'pediatrics', 'name_en' => 'Pediatrics', 'name_ar' => 'أطفال'],
-            ['category' => 'gynecology', 'name_en' => 'Gynecology', 'name_ar' => 'نسائية'],
-            ['category' => 'obstetrics', 'name_en' => 'Obstetrics', 'name_ar' => 'توليد'],
+            [
+                'clinic_email' => 'damascus@medx.sy',
+                'category' => 'pediatrics',
 
-            ['category' => 'dentistry_general', 'name_en' => 'General Dentistry', 'name_ar' => 'أسنان عامة'],
-            ['category' => 'dentistry_orthodontics', 'name_en' => 'Orthodontics', 'name_ar' => 'تقويم أسنان'],
-            ['category' => 'dentistry_surgery', 'name_en' => 'Dental Surgery', 'name_ar' => 'جراحة أسنان'],
-            ['category' => 'dentistry_cosmetic', 'name_en' => 'Cosmetic Dentistry', 'name_ar' => 'تجميل أسنان'],
-            ['category' => 'dentistry_implants', 'name_en' => 'Dental Implants', 'name_ar' => 'زراعة أسنان'],
+                'description_en' =>
+                    'The Pediatrics Department provides medical care and follow-up for infants, children, and adolescents.',
 
-            ['category' => 'dermatology', 'name_en' => 'Dermatology', 'name_ar' => 'جلدية'],
-            ['category' => 'cosmetic_dermatology', 'name_en' => 'Cosmetic Dermatology', 'name_ar' => 'تجميل جلدية'],
-            ['category' => 'plastic_surgery', 'name_en' => 'Plastic Surgery', 'name_ar' => 'جراحة تجميل'],
-            ['category' => 'aesthetic_medicine', 'name_en' => 'Aesthetic Medicine', 'name_ar' => 'طب تجميلي'],
+                'description_ar' =>
+                    'قسم الأطفال بيقدم معاينات ومتابعة صحية للأطفال والرضع واليافعين.',
 
-            ['category' => 'endocrinology', 'name_en' => 'Endocrinology', 'name_ar' => 'غدد'],
-            ['category' => 'nephrology', 'name_en' => 'Nephrology', 'name_ar' => 'كلى'],
-            ['category' => 'gastroenterology', 'name_en' => 'Gastroenterology', 'name_ar' => 'جهاز هضمي'],
-            ['category' => 'hematology', 'name_en' => 'Hematology', 'name_ar' => 'دمويات'],
-            ['category' => 'oncology', 'name_en' => 'Oncology', 'name_ar' => 'أورام'],
-            ['category' => 'infectious_disease', 'name_en' => 'Infectious Disease', 'name_ar' => 'أمراض معدية'],
-            ['category' => 'allergy', 'name_en' => 'Allergy & Immunology', 'name_ar' => 'حساسية ومناعة'],
+                'location_ar' =>
+                    'الطابق الثاني - الغرفة 203',
 
-            ['category' => 'general_surgery', 'name_en' => 'General Surgery', 'name_ar' => 'جراحة عامة'],
-            ['category' => 'laparoscopic_surgery', 'name_en' => 'Laparoscopic Surgery', 'name_ar' => 'جراحة تنظيرية'],
-            ['category' => 'emergency', 'name_en' => 'Emergency', 'name_ar' => 'طوارئ'],
+                'location_en' =>
+                    'Second Floor - Room 203',
+            ],
 
-            ['category' => 'radiology', 'name_en' => 'Radiology', 'name_ar' => 'أشعة'],
-            ['category' => 'laboratory', 'name_en' => 'Laboratory', 'name_ar' => 'تحاليل'],
-            ['category' => 'pathology', 'name_en' => 'Pathology', 'name_ar' => 'أمراض أنسجة'],
+            [
+                'clinic_email' => 'damascus@medx.sy',
+                'category' => 'dermatology',
 
-            ['category' => 'rehabilitation', 'name_en' => 'Rehabilitation', 'name_ar' => 'إعادة تأهيل'],
+                'description_en' =>
+                    'The Dermatology Department diagnoses and treats common skin, hair, and nail conditions.',
+
+                'description_ar' =>
+                    'قسم الجلدية بيقدم تشخيص وعلاج لمشاكل الجلد والشعر والأظافر.',
+
+                'location_ar' =>
+                    'الطابق الثالث - الغرفة 305',
+
+                'location_en' =>
+                    'Third Floor - Room 305',
+            ],
+
+            // مركز الشفاء - حلب
+
+            [
+                'clinic_email' => 'aleppo@medx.sy',
+                'category' => 'cardiology',
+
+                'description_en' =>
+                    'The Cardiology Department provides evaluation and follow-up for heart and blood vessel conditions.',
+
+                'description_ar' =>
+                    'قسم القلبية بيقدم فحوصات وتشخيص ومتابعة لأمراض القلب والأوعية.',
+
+                'location_ar' =>
+                    'الطابق الأول - الغرفة 105',
+
+                'location_en' =>
+                    'First Floor - Room 105',
+            ],
+
+            [
+                'clinic_email' => 'aleppo@medx.sy',
+                'category' => 'orthopedics',
+
+                'description_en' =>
+                    'The Orthopedics Department treats bone, joint, muscle, and movement-related conditions.',
+
+                'description_ar' =>
+                    'قسم العظام بيقدم تشخيص وعلاج لمشاكل العظام والمفاصل والعضلات.',
+
+                'location_ar' =>
+                    'الطابق الثاني - الغرفة 208',
+
+                'location_en' =>
+                    'Second Floor - Room 208',
+            ],
+
+            [
+                'clinic_email' => 'aleppo@medx.sy',
+                'category' => 'ent',
+
+                'description_en' =>
+                    'The ENT Department provides diagnosis and treatment for ear, nose, and throat conditions.',
+
+                'description_ar' =>
+                    'قسم الأنف والأذن والحنجرة بيقدم تشخيص وعلاج للمشاكل المتعلقة بالأذن والأنف والحنجرة.',
+
+                'location_ar' =>
+                    'الطابق الثالث - الغرفة 310',
+
+                'location_en' =>
+                    'Third Floor - Room 310',
+            ],
+
+            // مركز الحياة - اللاذقية
+
+            [
+                'clinic_email' => 'latakia@medx.sy',
+                'category' => 'gynecology',
+
+                'description_en' =>
+                    'The Gynecology Department provides consultation and follow-up for women’s health conditions.',
+
+                'description_ar' =>
+                    'قسم النسائية بيقدم معاينات ومتابعة للحالات الصحية الخاصة بالنساء.',
+
+                'location_ar' =>
+                    'الطابق الأول - الغرفة 102',
+
+                'location_en' =>
+                    'First Floor - Room 102',
+            ],
+
+            [
+                'clinic_email' => 'latakia@medx.sy',
+                'category' => 'ophthalmology',
+
+                'description_en' =>
+                    'The Ophthalmology Department provides eye examinations and treatment for common vision conditions.',
+
+                'description_ar' =>
+                    'قسم العيون بيقدم فحوصات وتشخيص وعلاج لمشاكل النظر وأمراض العين.',
+
+                'location_ar' =>
+                    'الطابق الثاني - الغرفة 206',
+
+                'location_en' =>
+                    'Second Floor - Room 206',
+            ],
+
+            [
+                'clinic_email' => 'latakia@medx.sy',
+                'category' => 'dentistry_general',
+
+                'description_en' =>
+                    'The General Dentistry Department provides preventive care, examinations, and treatment for common dental conditions.',
+
+                'description_ar' =>
+                    'قسم الأسنان العامة بيقدم فحوصات وعلاج ومتابعة لمشاكل الأسنان واللثة.',
+
+                'location_ar' =>
+                    'الطابق الثالث - الغرفة 312',
+
+                'location_en' =>
+                    'Third Floor - Room 312',
+            ],
         ];
 
-        foreach ($departments as $dept) {
-            DepartmentCategory::create($dept);
+        foreach ($departments as $data) {
+            $clinic = Clinic::where(
+                'email',
+                $data['clinic_email']
+            )->firstOrFail();
+
+            $category = DepartmentCategory::where(
+                'category',
+                $data['category']
+            )->firstOrFail();
+
+            Department::updateOrCreate(
+                [
+                    'clinic_id' => $clinic->id,
+                    'category_id' => $category->id,
+                ],
+                [
+                    'description_en' => $data['description_en'],
+                    'description_ar' => $data['description_ar'],
+                    'location_ar' => $data['location_ar'],
+                    'location_en' => $data['location_en'],
+                ]
+            );
         }
     }
 }

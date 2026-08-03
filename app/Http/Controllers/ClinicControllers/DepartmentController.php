@@ -63,4 +63,20 @@ class DepartmentController extends Controller
             'message' => __('messages.department_deleted')
         ], 200);
     }
+
+    public function statistics(
+    int $clinicId,
+    int $departmentId
+) {
+    $statistics = $this->departmentService
+        ->getDepartmentStatistics(
+            $clinicId,
+            $departmentId
+        );
+
+    return response()->json([
+        'message' => 'Department statistics retrieved successfully',
+        'data' => $statistics,
+    ], 200);
+}
 }

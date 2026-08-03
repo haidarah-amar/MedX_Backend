@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Clinic extends Authenticatable implements JWTSubject
 {
@@ -85,4 +87,22 @@ class Clinic extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Favorite::class, 'clinic_id');
     }
+
+    protected function logo(): Attribute
+{
+    return Attribute::make(
+        get: fn ($value) => $value
+            ? asset('storage/' . $value)
+            : null,
+    );
+}
+
+protected function ownerIdphoto(): Attribute
+{
+    return Attribute::make(
+        get: fn ($value) => $value
+            ? asset('storage/' . $value)
+            : null,
+    );
+}
 }
