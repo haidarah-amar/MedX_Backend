@@ -37,14 +37,15 @@ class AppointmentService implements AppointmentServiceInterface
 
         $lastAppointment = Appointment::query()
             ->where('user_id', $user->id)
+            ->where('dep_id', $data['dep_id'])
             ->latest('created_at')
             ->latest('id')
             ->first();
 
         abort_if(
-            $lastAppointment && $lastAppointment->status !== 'completed',
+            $lastAppointment && $lastAppointment->status === 'booked' ,
             422,
-            'You cannot book another appointment until your last appointment is completed.'
+            'You cannot book another appointment in this department until your last appointment is completed.'
         );
 
         abort_if(
@@ -58,6 +59,7 @@ class AppointmentService implements AppointmentServiceInterface
         $hasAppointmentInDepartment = Appointment::query()
             ->where('user_id', $user->id)
             ->where('dep_id', $data['dep_id'])
+            ->where('status', 'booked')
             ->exists();
 
         abort_if(

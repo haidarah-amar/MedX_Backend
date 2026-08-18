@@ -56,8 +56,8 @@ Route::prefix('appointments')->controller(AppointmentController::class)->group(f
     Route::get('/', 'index');
     Route::get('/{appointment}', 'show');
     Route::post('/', 'store');
-    Route::patch('/{appointment}/cancel', 'cancel');
-    Route::patch('/{appointment}/complete', 'complete');
+    Route::post('/{appointment}/cancel', 'cancel');
+    Route::post('/{appointment}/complete', 'complete');
     Route::put('/{appointment}', 'update');
 });
 

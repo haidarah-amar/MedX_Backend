@@ -37,7 +37,7 @@ class AppointmentController extends Controller
         );
     }
 
-    if ($accountType === 'user') {
+
         $user = JWTAuth::parseToken()->authenticate();
 
         return response()->json(
@@ -46,11 +46,11 @@ class AppointmentController extends Controller
                 $request->status
             )
         );
-    }
+    
 
-    return response()->json([
-        'message' => 'Invalid account type.'
-    ], 401);
+    // return response()->json([
+    //     'message' => 'Invalid account type.'
+    // ], 401);
 }
 
     public function show(Request $request, Appointment $appointment)
@@ -81,12 +81,29 @@ class AppointmentController extends Controller
     public function complete(Request $request, Appointment $appointment)
     {
         $data = $request->validate([
-            'doctor_notes' => 'nullable|string',
+            'doctor_notes' => 'required|string',
         ]);
+
+        $payload = JWTAuth::parseToken()->getPayload();
+        $accountType = $payload->get('account_type');
+
+        response()->json(['data' => $accountType]);
+
+    if ($accountType === 'clinic') {
+        $clinicId = (int) $payload->get('sub');
+
+        if ($appointment->clinic_id !== $clinicId) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
 
         $appointment = $this->appointmentService->complete($appointment, $data);
 
-        return response()->json($appointment);
+        return response()->json(['data' => $appointment , 200]);
+    } else {
+        return response()->json([
+            'data' => 'account type is ' . $accountType,
+            'message' => 'Forbidden.'], 403);
+    }
     }
 
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
