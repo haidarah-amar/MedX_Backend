@@ -31,6 +31,7 @@ Route::prefix('profile')->middleware('auth:api')->group(function () {
 
     // Firebase notifications
     Route::post('fcm-tokens', [FcmTokenController::class, 'store']);
+    Route::post('fcm-tokens/delete', [FcmTokenController::class, 'destroy']);
     Route::delete('fcm-tokens', [FcmTokenController::class, 'destroy']);
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);

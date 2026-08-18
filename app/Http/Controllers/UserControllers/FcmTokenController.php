@@ -4,6 +4,7 @@ namespace App\Http\Controllers\UserControllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class FcmTokenController extends Controller
 {
@@ -33,16 +34,19 @@ class FcmTokenController extends Controller
 
     public function destroy(Request $request)
     {
-        $data = $request->validate([
+        $data = Validator::make([
+            'token' => $request->input('token') ?: $request->query('token'),
+        ], [
             'token' => ['required', 'string'],
-        ]);
+        ])->validate();
 
-        $request->user()->fcmTokens()
+        $deleted = $request->user()->fcmTokens()
             ->where('token', $data['token'])
             ->delete();
 
         return response()->json([
             'message' => 'FCM token deleted successfully.',
+            'deleted' => $deleted,
         ]);
     }
 }

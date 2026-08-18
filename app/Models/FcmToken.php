@@ -30,4 +30,9 @@ class FcmToken extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

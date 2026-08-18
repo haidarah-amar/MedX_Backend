@@ -22,6 +22,11 @@ class Doctor extends Model
         'working_hours',
         'department_id',
         'clinic_id',
+        'rating',
+    ];
+
+    protected $casts = [
+        'rating' => 'decimal:2',
     ];
 
     public function clinic()
@@ -60,5 +65,4 @@ class Doctor extends Model
         });
     }
 }
-
 

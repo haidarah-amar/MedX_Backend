@@ -23,12 +23,14 @@ class Appointment extends Model
         'appointment_fee',
         'is_returning',
         'doctor_cost',
+        'rating',
     ];
 
     protected $casts = [
         'date' => 'date',
         'time' => 'datetime',
         'is_asap' => 'boolean',
+        'rating' => 'decimal:2',
     ];
 
     // ─── Relationships ───────────────────────────────────────────────

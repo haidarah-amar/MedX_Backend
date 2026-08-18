@@ -10,6 +10,11 @@ class Department extends Model
 
     // use HasFactory;
     protected $guarded = [];
+
+    protected $casts = [
+        'rating' => 'decimal:2',
+    ];
+
     public function clinic()
     {
         return $this->belongsTo(Clinic::class, 'clinic_id');

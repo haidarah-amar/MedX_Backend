@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Jobs\SendAppointmentConfirmationJob;
 use App\Jobs\SendAppointmentReminderJob;
 use App\Models\Appointment;
 use App\Models\Clinic;
 use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
@@ -99,7 +99,13 @@ class AppointmentService implements AppointmentServiceInterface
 
         $appointment = $this->appointmentRepository->create($data);
 
-        $this->dispatchAppointmentJobs($appointment);
+        $this->notifyAppointmentUser(
+            $appointment,
+            'appointment_confirmed',
+            'Your appointment has been booked successfully.'
+        );
+
+        $this->dispatchAppointmentReminderJob($appointment);
 
         return $appointment->load(['doctor', 'department.clinic']);
     }
@@ -136,18 +142,58 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function update(Appointment $appointment, array $data)
     {
+        $shouldRefreshRatings = array_key_exists('rating', $data);
+
         $appointment = $this->appointmentRepository
             ->update($appointment, $data);
+
+        if ($shouldRefreshRatings) {
+            $this->refreshRatingHierarchy($appointment);
+        }
 
         $this->notifyAppointmentUser($appointment, 'appointment_updated', 'Your appointment details have been updated.');
 
         return $appointment;
     }
 
-    private function dispatchAppointmentJobs(Appointment $appointment): void
+    private function refreshRatingHierarchy(Appointment $appointment): void
     {
-        SendAppointmentConfirmationJob::dispatch($appointment)->afterCommit();
+        $doctorRating = Appointment::query()
+            ->where('doctor_id', $appointment->doctor_id)
+            ->whereNotNull('rating')
+            ->avg('rating');
 
+        Doctor::whereKey($appointment->doctor_id)->update([
+            'rating' => $this->formatRating($doctorRating),
+        ]);
+
+        $departmentRating = DB::table('departments_doctors')
+            ->join('doctors', 'departments_doctors.doctor_id', '=', 'doctors.id')
+            ->where('departments_doctors.department_id', $appointment->dep_id)
+            ->whereNotNull('doctors.rating')
+            ->avg('doctors.rating');
+
+        Department::whereKey($appointment->dep_id)->update([
+            'rating' => $this->formatRating($departmentRating),
+        ]);
+
+        $clinicRating = Department::query()
+            ->where('clinic_id', $appointment->clinic_id)
+            ->whereNotNull('rating')
+            ->avg('rating');
+
+        Clinic::whereKey($appointment->clinic_id)->update([
+            'rating' => $this->formatRating($clinicRating),
+        ]);
+    }
+
+    private function formatRating(mixed $rating): ?float
+    {
+        return $rating === null ? null : round((float) $rating, 2);
+    }
+
+    private function dispatchAppointmentReminderJob(Appointment $appointment): void
+    {
         $reminderAt = $appointment->time?->copy()->subHours(2);
 
         if (! $reminderAt) {
