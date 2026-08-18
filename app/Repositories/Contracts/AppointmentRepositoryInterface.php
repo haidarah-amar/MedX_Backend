@@ -17,4 +17,7 @@ interface AppointmentRepositoryInterface
 
     public function paginateForClinic(int $clinicId, ?string $status = null);
 
+    public function getDepartmentWithClinic(int $departmentId);
+    public function getDoctorsByDepartment(int $departmentId);
+    public function getBookedAppointments(int $departmentId, string $date);
 }

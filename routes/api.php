@@ -61,6 +61,8 @@ Route::prefix('appointments')->controller(AppointmentController::class)->group(f
     Route::put('/{appointment}', 'update');
 });
 
+Route::get('/departments/{departmentId}/available', [AppointmentController::class, 'available']);
+
 Route::prefix('clinics/management')->group(function () {
 
     Route::post('/register', [ClinicController::class, 'store']);
@@ -88,6 +90,7 @@ Route::prefix('clinics/departments')->controller(DepartmentController::class)->g
     Route::get('/{id}', 'show');
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
+    
 });
 Route::get(
     '/clinics/{clinicId}/departments/{departmentId}/statistics',

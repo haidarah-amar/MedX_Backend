@@ -10,6 +10,7 @@ use App\Models\Department;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AppointmentService implements AppointmentServiceInterface
@@ -187,4 +188,108 @@ class AppointmentService implements AppointmentServiceInterface
     {
     return $this->appointmentRepository ->paginateForClinic($clinicId, $status);
     }
+
+    public function getAvailableAppointments(
+    int $departmentId,
+    string $date
+): array {
+
+    $department = $this->appointmentRepository
+        ->getDepartmentWithClinic($departmentId);
+
+    $doctors = $this->appointmentRepository
+        ->getDoctorsByDepartment($departmentId);
+
+    $bookedAppointments = $this->appointmentRepository
+        ->getBookedAppointments($departmentId, $date);
+
+    $clinicStart = Carbon::parse(
+        $department->clinic->start_time
+    );
+
+    $clinicEnd = Carbon::parse(
+        $department->clinic->end_time
+    );
+
+    $bookedByDoctor = $bookedAppointments
+        ->groupBy('doctor_id');
+
+    $result = [];
+
+    foreach ($doctors as $doctor) {
+
+        $doctorStart = Carbon::parse($doctor->start_time);
+        $doctorEnd = Carbon::parse($doctor->end_time);
+
+        
+        $start = $doctorStart->greaterThan($clinicStart)
+            ? $doctorStart
+            : $clinicStart;
+
+        $end = $doctorEnd->lessThan($clinicEnd)
+            ? $doctorEnd
+            : $clinicEnd;
+
+        $allSlots = $this->generateTimeSlots(
+            $start,
+            $end
+        );
+
+    
+       $bookedTimes = collect(
+    $bookedByDoctor->get($doctor->id, [])
+)->map(function ($appointment) {
+
+    $time = Carbon::parse($appointment->time);
+
+    return $time->format('H:00');
+
+})->unique()->values()->toArray();
+
+        
+        $availableTimes = array_values(
+            array_diff(
+                $allSlots,
+                $bookedTimes
+            )
+        );
+
+        $result[] = [
+            'doctor_id' => $doctor->id,
+            'doctor_name_en' => $doctor->name_en,
+            'doctor_name_ar' => $doctor->name_ar,
+
+            'working_hours' => [
+                'start' => $start->format('H:i'),
+                'end' => $end->format('H:i'),
+            ],
+
+            'available_times' => $availableTimes,
+        ];
+    }
+
+    return [
+        'department_id' => $departmentId,
+        'date' => $date,
+        'doctors' => $result,
+    ];
+}
+private function generateTimeSlots(
+    Carbon $start,
+    Carbon $end
+): array {
+
+    $slots = [];
+
+    $current = $start->copy();
+
+    while ($current < $end) {
+
+        $slots[] = $current->format('H:i');
+
+        $current->addHour();
+    }
+
+    return $slots;
+}
 }

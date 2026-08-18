@@ -4,6 +4,7 @@ namespace App\Http\Controllers\UserControllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
+use App\Http\Requests\AvailableAppointmentsRequest;
 use App\Models\Appointment;
 use App\Services\Contracts\AppointmentServiceInterface;
 use Illuminate\Http\Request;
@@ -116,6 +117,19 @@ class AppointmentController extends Controller
         return response()->json([
             'message' => 'تم تحديث بيانات الموعد بنجاح ',
             'data' => $appointment
+        ]);
+    }
+
+    public function available( AvailableAppointmentsRequest $request, int $departmentId
+    ) {
+        $data = $this->appointmentService->getAvailableAppointments(
+            $departmentId,
+            $request->date('date')
+        );
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
         ]);
     }
 }

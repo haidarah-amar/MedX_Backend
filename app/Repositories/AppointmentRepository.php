@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Appointment;
+use App\Models\Department;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentRepository implements AppointmentRepositoryInterface
 {
@@ -60,6 +62,41 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         )
         ->orderByDesc('date')
         ->paginate(15);
+}
+public function getDepartmentWithClinic(int $departmentId)
+{
+    return Department::with('clinic')->findOrFail($departmentId);
+}
+
+public function getDoctorsByDepartment(int $departmentId)
+{
+    return DB::table('departments_doctors')
+        ->join(
+            'doctors',
+            'doctors.id',
+            '=',
+            'departments_doctors.doctor_id'
+        )
+        ->where('departments_doctors.department_id', $departmentId)
+        ->select(
+            'doctors.id',
+            'doctors.name_en',
+            'doctors.name_ar',
+            'departments_doctors.start_time',
+            'departments_doctors.end_time'
+        )
+        ->get();
+}
+
+public function getBookedAppointments(
+    int $departmentId,
+    string $date
+) {
+    return Appointment::where('dep_id', $departmentId)
+        ->where('date', $date)
+        ->where('status', 'booked')
+        ->select('doctor_id', 'time')
+        ->get();
 }
 
 }

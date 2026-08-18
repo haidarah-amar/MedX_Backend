@@ -21,5 +21,6 @@ interface AppointmentServiceInterface
 
     public function getClinicAppointments(int $clinicId, ?string $status = null);
 
+    public function getAvailableAppointments(int $departmentId, string $date): array;
 
 }
