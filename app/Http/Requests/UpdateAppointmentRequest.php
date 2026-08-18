@@ -16,7 +16,8 @@ class UpdateAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_notes' => 'required|string|max:255',
+            'user_notes' => 'sometimes|string|max:255',
+            'rating' => 'sometimes|nullable|numeric|min:1|max:5',
         ];
     }
 }

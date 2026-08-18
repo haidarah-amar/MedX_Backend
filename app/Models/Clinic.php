@@ -25,6 +25,7 @@ class Clinic extends Authenticatable implements JWTSubject
         return [
             'is_approved' => 'boolean',
             'is_active' => 'boolean',
+            'rating' => 'decimal:2',
         ];
     }
 

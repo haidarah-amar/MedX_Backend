@@ -16,6 +16,7 @@ class Notification extends Model
 
     protected $fillable = [
         'user_id',
+        'fcm_token_id',
         'type',
         'title',
         'body',
@@ -37,6 +38,11 @@ class Notification extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function fcmToken()
+    {
+        return $this->belongsTo(FcmToken::class);
     }
 
     public function scopeUnread($query)
