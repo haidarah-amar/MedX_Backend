@@ -112,6 +112,7 @@ class FirebaseCloudMessagingService
     private function projectId(): string
     {
         $projectId = config('services.firebase.project_id')
+            ?: ($this->googleServices()['project_info']['project_id'] ?? null)
             ?: ($this->serviceAccount()['project_id'] ?? null);
 
         if (! $projectId) {
@@ -119,6 +120,19 @@ class FirebaseCloudMessagingService
         }
 
         return $projectId;
+    }
+
+    private function googleServices(): array
+    {
+        $path = config('services.firebase.google_services_path');
+
+        if (! $path || ! file_exists($path)) {
+            return [];
+        }
+
+        $config = json_decode(file_get_contents($path), true);
+
+        return is_array($config) ? $config : [];
     }
 
     private function stringifyData(array $data): array
