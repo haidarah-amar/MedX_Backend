@@ -15,11 +15,23 @@ class DoctorRepository implements DoctorRepositoryInterface
     }
 
     public function getDoctorsByDepartment(int $departmentId)
-    {
-        return Doctor::whereHas('departments', function ($query) use ($departmentId) {
-            $query->where('departments.id', $departmentId);
-        })->get();
-    }
+{
+    return Doctor::whereHas('departments', function ($query) use ($departmentId) {
+        $query->where('departments.id', $departmentId);
+    })
+    ->with([
+        'departments' => function ($query) use ($departmentId) {
+            $query->where('departments.id', $departmentId)
+                ->withPivot([
+                    'clinic_id',
+                    'hourly_rate',
+                    'start_time',
+                    'end_time',
+                ]);
+        }
+    ])
+    ->get();
+}
 
     public function findById(int $doctorId): Doctor
     {

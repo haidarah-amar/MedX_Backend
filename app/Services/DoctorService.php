@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Clinic;
+use App\Models\Department;
 use App\Models\Doctor;
 use App\Repositories\Contracts\DoctorRepositoryInterface;
 use App\Services\Contracts\DoctorServiceInterface;
@@ -70,16 +71,13 @@ public function getClinicDoctors(int $clinicId): array
 
     $clinic = Clinic::findOrFail($clinicId);
 
-    // الوقت الحالي
     $currentTime = Carbon::now()->format('H:i:s');
 
-    // العدد الكامل للأطباء المرتبطين بالمركز
     $totalDoctorsCount = DB::table('departments_doctors')
         ->where('clinic_id', $clinicId)
         ->distinct('doctor_id')
         ->count('doctor_id');
 
-    // عدد الأطباء الموجودين حاليًا حسب وقت دوامهم
     $availableDoctorsCount = DB::table('departments_doctors')
         ->where('clinic_id', $clinicId)
         ->where('start_time', '<=', $currentTime)
@@ -87,7 +85,6 @@ public function getClinicDoctors(int $clinicId): array
         ->distinct('doctor_id')
         ->count('doctor_id');
 
-    // إضافة fee لكل طبيب
     $doctors->getCollection()->transform(
         function ($doctor) use ($clinic) {
 
@@ -120,7 +117,34 @@ public function getClinicDoctors(int $clinicId): array
 
     public function getDoctorsByDepartment(int $departmentId)
 {
-    return $this->doctorRepository->getDoctorsByDepartment($departmentId);
+    $doctors = $this->doctorRepository
+        ->getDoctorsByDepartment($departmentId);
+
+    $department = Department::with('clinic')
+        ->findOrFail($departmentId);
+
+    $clinic = $department->clinic;
+
+    $doctors->transform(function ($doctor) use ($clinic) {
+
+        $doctorHourlyRate = $doctor->departments
+            ->first()
+            ->pivot
+            ->hourly_rate;
+
+        $fee = $doctorHourlyRate
+            + (
+                $doctorHourlyRate
+                * $clinic->percentage
+                / 100
+            );
+
+        $doctor->fee = round($fee, 2);
+
+        return $doctor;
+    });
+
+    return $doctors;
 }
 
     public function getAllDoctors(): LengthAwarePaginator
