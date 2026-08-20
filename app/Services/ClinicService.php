@@ -80,4 +80,16 @@ class ClinicService implements ClinicServiceInterface
     {
         return $this->clinicRepository->uploadImages($clinicId, $images);
     }
+
+    public function changePassword(
+    int $clinicId,
+    string $currentPassword,
+    string $newPassword
+): bool {
+    return $this->clinicRepository->changePassword(
+        $clinicId,
+        $currentPassword,
+        $newPassword
+    );
+}
 }

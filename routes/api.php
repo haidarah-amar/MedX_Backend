@@ -55,12 +55,18 @@ Route::prefix('admin')->group(function () {
 
 Route::prefix('appointments')->controller(AppointmentController::class)->group(function () {
     Route::get('/', 'index');
-    Route::get('/{appointment}', 'show');
-    Route::post('/', 'store');
-    Route::post('/{appointment}/cancel', 'cancel');
-    Route::post('/{appointment}/complete', 'complete');
-    Route::put('/{appointment}', 'update');
-    Route::put('/{appointment}/refresh-ratings', 'refreshRatingHierarchy');
+
+    Route::post('/{appointment}/complete', 'complete')->middleware('auth:clinic-api');
+    
+    Route::middleware('auth:api')->group(function () {
+       Route::post('/', 'store');
+       Route::get('/{appointment}', 'show');
+       Route::post('/{appointment}/cancel', 'cancel');
+       Route::put('/{appointment}', 'update');
+       Route::put('/{appointment}/refresh-ratings', 'refreshRatingHierarchy');
+
+    });
+
 });
 
 Route::post('/clinics/appointments', [AppointmentController::class, 'store'])
@@ -78,6 +84,7 @@ Route::prefix('clinics/management')->group(function () {
 
         Route::get('/logout', [ClinicController::class, 'logout']);
         Route::get('/show', [ClinicController::class, 'show']);
+        Route::post('/change_password',[ClinicController::class, 'changePassword']);
 
 
         Route::middleware('clinic.working')->group(function () {
@@ -90,11 +97,13 @@ Route::prefix('clinics/management')->group(function () {
 
 Route::prefix('clinics/departments')->controller(DepartmentController::class)->group(function () {
 
-    Route::get('/{clinicId}', 'index');
+    Route::get('/categories', 'getAllCategories');
     Route::post('/', 'store');
-    Route::get('/{id}', 'show');
+    Route::get('/show/{id}', 'show');
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
+    Route::get('/{clinicId}', 'index');
+    
 
 });
 Route::get(
@@ -177,6 +186,6 @@ Route::prefix('financial/dashboard')
 Route::get('/financial/export', [FinancialExportController::class, 'export']);
 
 Route::prefix('favorites')->group(function () {
-    Route::post('/toggle/{clinicId}', [\App\Http\Controllers\FavoriteController::class, 'toggle']);
-    Route::get('/', [\App\Http\Controllers\FavoriteController::class, 'getAllFavoritesByUserId']);
+    Route::post('/toggle/{clinicId}', [FavoriteController::class, 'toggle']);
+    Route::get('/', [FavoriteController::class, 'getAllFavoritesByUserId']);
 });

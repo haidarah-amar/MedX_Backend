@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class OperationalExpense extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
     protected $fillable = [
         'clinic_id',
         'category',

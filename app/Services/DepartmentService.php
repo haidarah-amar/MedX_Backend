@@ -57,13 +57,7 @@ public function getAllForClinic(int $clinicId)
 
     public function getByIdForClinic(int $id)
     {
-        $clinic = auth('clinic-api')->user();
-
-        if (!$clinic) {
-            abort(403, 'Unauthorized');
-        }
-
-        return $this->departmentRepository->findByIdForClinic($id, $clinic->id);
+        return $this->departmentRepository->findByIdForClinic($id);
     }
 
     public function createForClinic(array $data)
@@ -109,4 +103,10 @@ public function getAllForClinic(int $clinicId)
             $departmentId
         );
 }
+
+public function getAllCategories()
+{
+    return $this->departmentRepository->getAllCategories();
+}
+
 }

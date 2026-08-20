@@ -1,0 +1,21 @@
+[33mcommit 8221b20b4418173b2e3d8986d5ca3179ccc48325[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: fd5fdf4 7ffc7a8
+Author: haidarah-amar <192092188+haidarah-amar@users.noreply.github.com.>
+Date:   Tue Aug 18 19:03:01 2026 +0300
+
+    Merge branch 'main' of https://github.com/haidarah-amar/MedX_Backend
+
+ .../UserControllers/FcmTokenController.php         | 10 [32m++[m[31m-[m
+ app/Http/Requests/UpdateAppointmentRequest.php     |  3 [32m+[m[31m-[m
+ app/Models/Appointment.php                         |  2 [32m+[m
+ app/Models/Clinic.php                              |  1 [32m+[m
+ app/Models/Department.php                          |  5 [32m++[m
+ app/Models/Doctor.php                              |  6 [32m+[m[31m-[m
+ app/Models/FcmToken.php                            |  5 [32m++[m
+ app/Models/Notification.php                        |  6 [32m++[m
+ app/Services/AppointmentService.php                | 54 [32m++++++++++++++[m[31m--[m
+ app/Services/NotificationService.php               | 74 [32m+++++++++++++++++++[m[31m---[m
+ ...linics_departments_doctors_and_appointments.php | 46 [32m++++++++++++++[m
+ ...002_add_fcm_token_id_to_notifications_table.php | 30 [32m+++++++++[m
+ routes/api.php                                     |  1 [32m+[m
+ 13 files changed, 226 insertions(+), 17 deletions(-)

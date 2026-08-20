@@ -14,4 +14,9 @@ class Document extends Model
     {
         return $this->belongsTo(Clinic::class , 'clinic_id');
     }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

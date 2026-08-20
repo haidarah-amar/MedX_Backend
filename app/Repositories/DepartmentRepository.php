@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Appointment;
 use App\Models\Department;
+use App\Models\DepartmentCategory;
 use App\Repositories\Contracts\DepartmentRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -39,11 +40,9 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         return $this->findById($id)->delete();
     }
 
-    public function findByIdForClinic(int $id, int $clinicId)
+    public function findByIdForClinic(int $id)
     {
-        return Department::findOrFail($id)
-                        ->where('clinic_id', $clinicId)
-                        ->firstOrFail();
+        return Department::findOrFail($id);
     }
 
     public function allForClinic(int $clinicId)
@@ -131,4 +130,9 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         'current_people_count' => $currentPeopleCount,
     ];
 }
+public function getAllCategories()
+{
+    return DepartmentCategory::all();
+}
+
 }

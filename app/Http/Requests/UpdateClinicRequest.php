@@ -14,7 +14,7 @@ class UpdateClinicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'sometimes|email|unique:clinics,email,' . auth('api')->id(),
+            'email' => 'sometimes|email|unique:clinics,email,' . auth('clinic-api')->id(),
 
             'password' => 'sometimes|min:6',
 

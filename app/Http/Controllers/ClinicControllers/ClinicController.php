@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\ClinicControllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeClinicPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreClinicRequest;
 use App\Http\Requests\UpdateClinicRequest;
+use App\Models\Clinic;
 use App\Services\Contracts\ClinicServiceInterface;
 use Illuminate\Http\Request;
 
@@ -33,15 +35,16 @@ class ClinicController extends Controller
 
         if ($result === null) {
             return response()->json([
-                'error' => __('messages.unauthorized'),
+                'error' => __('messages.unauthorized'),    
             ], 401);
         }
 
-        if ($result === false) {
-            return response()->json([
-                'error' => __('messages.clinic_not_approved'),
-            ], 403);
-        }
+        if (is_array($result) && ($result['status'] ?? null) === 'rejected') {
+    return response()->json([
+        'status' => __('messages.clinic_not_approved'),
+        'rejection reason' => $result['rejection_reason'],
+    ], 403);
+}
 
         if ($result === 'inactive') {
             return response()->json([
@@ -130,4 +133,23 @@ class ClinicController extends Controller
             'data' => $clinics,
         ] , 200);
     }
+
+    public function changePassword(ChangeClinicPasswordRequest $request)
+{
+    $result = $this->clinicService->changePassword(
+        auth('clinic-api')->id(),
+        $request->current_password,
+        $request->password
+    );
+
+    if (!$result) {
+        return response()->json([
+            'error' => __('messages.current_password_incorrect'),
+        ], 422);
+    }
+
+    return response()->json([
+        'message' => __('messages.password_changed_successfully'),
+    ]);
+}
 }

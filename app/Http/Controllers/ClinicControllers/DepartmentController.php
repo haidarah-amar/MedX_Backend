@@ -79,4 +79,14 @@ class DepartmentController extends Controller
         'data' => $statistics,
     ], 200);
 }
+
+public function getAllCategories()
+{
+    $categories = $this->departmentService->getAllCategories();
+
+    return response()->json([
+        'data' => $categories,
+    ]);
+}
+
 }

@@ -17,7 +17,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
             ->with(['doctor', 'department.clinic'])
             ->when($status, fn($query) => $query->where('status', $status))
             ->orderByDesc('date')
-            ->paginate(15);
+            ->paginate(10);
     }
 
     public function create(array $data)

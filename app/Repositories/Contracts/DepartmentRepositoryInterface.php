@@ -14,7 +14,7 @@ interface DepartmentRepositoryInterface
 
     public function delete(int $id);
 
-    public function findByIdForClinic(int $id, int $clinicId);
+    public function findByIdForClinic(int $id);
 
     public function allForClinic(int $clinicId);
 
@@ -25,4 +25,5 @@ interface DepartmentRepositoryInterface
     public function deleteForClinic(int $id, int $clinicId);
 
     public function getDepartmentStatistics(int $clinicId, int $departmentId): array;
+    public function getAllCategories();
 }

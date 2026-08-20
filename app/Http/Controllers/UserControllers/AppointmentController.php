@@ -121,8 +121,7 @@ class AppointmentController extends Controller
         return response()->json(['data' => $appointment , 200]);
     } else {
         return response()->json([
-            'data' => 'account type is ' . $accountType,
-            'message' => 'Forbidden.'], 403);
+            'message' => 'Forbidden , You are not the clinic that had this appointment'], 403);
     }
     }
 

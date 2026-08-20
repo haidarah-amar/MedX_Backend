@@ -27,4 +27,6 @@ interface ClinicServiceInterface
     public function start(int $id);
 
     public function uploadImages(int $clinicId, array $images);
+
+    public function changePassword(int $clinicId,string $currentPassword,string $newPassword): bool ;
 }

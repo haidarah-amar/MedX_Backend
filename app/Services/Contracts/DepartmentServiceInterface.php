@@ -25,4 +25,6 @@ interface DepartmentServiceInterface
     public function deleteForClinic(int $id);
 
     public function getDepartmentStatistics(int $clinicId, int $departmentId): array;
+
+    public function getAllCategories();
 }

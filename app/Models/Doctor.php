@@ -9,6 +9,11 @@ use Illuminate\Support\Str;
 class Doctor extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
     protected $fillable = [
         'serial_number',
         'name_en',
@@ -34,10 +39,6 @@ class Doctor extends Model
         return $this->belongsTo(Clinic::class, 'clinic_id');
     }
 
-    // public function departments()
-    // {
-    //     return $this->belongsToMany(Department::class, 'departments_doctors', 'doctor_id', 'department_id');
-    // }
 
     public function departments()
     {

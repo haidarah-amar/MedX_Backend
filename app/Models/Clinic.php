@@ -20,6 +20,13 @@ class Clinic extends Authenticatable implements JWTSubject
 
     protected $guarded = [];
 
+    protected $hidden = [
+    'password',
+    'remember_token',
+    'created_at',
+    'updated_at',
+];
+
     protected function casts(): array
     {
         return [

@@ -13,17 +13,17 @@ class ClinicRepository implements ClinicRepositoryInterface
 {
     public function findById(int $id)
     {
-        return Clinic::findOrFail($id)->except(['password' , 'created_at' , 'updated_at']);
+        return Clinic::findOrFail($id);
     }
 
     public function findByEmail(string $email)
     {
-        return Clinic::whereEmail($email)->first()->except(['password' , 'created_at' , 'updated_at']);
+        return Clinic::whereEmail($email)->first();
     }
 
     public function all()
     {
-        return Clinic::latest()->paginate(10)->except(['password' , 'created_at' , 'updated_at']);
+        return Clinic::latest()->paginate(10);
     }
 
     public function create(array $data)
@@ -62,8 +62,11 @@ class ClinicRepository implements ClinicRepositoryInterface
         }
 
         if (! $clinic->isApproved()) {
-            return false;
-        }
+    return [
+        'status' => 'rejected',
+        'rejection_reason' => $clinic->rejection_reason,
+    ];
+}
 
         if (! $clinic->is_active) {
             return 'inactive';
@@ -173,4 +176,28 @@ class ClinicRepository implements ClinicRepositoryInterface
 
         return $uploadedImages;
     }
+
+
+public function changePassword(
+    int $clinicId,
+    string $currentPassword,
+    string $newPassword
+): bool {
+    $clinic = Clinic::find($clinicId);
+
+    if (!$clinic) {
+        return false;
+    }
+
+    if (!Hash::check($currentPassword, $clinic->password)) {
+        return false;
+    }
+
+    $clinic->password = Hash::make($newPassword);
+    $clinic->save();
+
+    JWTAuth::invalidate(JWTAuth::getToken());
+    
+    return true;
+}
 }

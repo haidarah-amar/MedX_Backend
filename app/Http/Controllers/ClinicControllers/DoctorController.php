@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ClinicControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractDoctorRequest;
 use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UnContractDoctorRequest;
 use App\Http\Requests\UpdateDoctorContractRequest;
 use App\Http\Requests\UpdateDoctorRequest;
 use App\Services\Contracts\DoctorServiceInterface;
@@ -131,7 +132,7 @@ class DoctorController extends Controller
     ], 200);
 }
 
-public function uncontract(ContractDoctorRequest $request)
+public function uncontract(UnContractDoctorRequest $request)
 {
     $clinic = auth('clinic-api')->user();
 

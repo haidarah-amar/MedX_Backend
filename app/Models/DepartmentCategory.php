@@ -15,4 +15,9 @@ class DepartmentCategory extends Model
         'name_en',
         'name_ar',
     ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

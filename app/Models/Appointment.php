@@ -9,6 +9,11 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     protected $fillable = [
         'user_id',
         'doctor_id',
