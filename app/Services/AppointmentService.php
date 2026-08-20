@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Requests\UpdateAppointmentRequest;
 use App\Jobs\SendAppointmentReminderJob;
 use App\Models\Appointment;
 use App\Models\Clinic;
 use App\Models\Department;
-use App\Models\Doctor;
 use App\Models\User;
 use App\Repositories\Contracts\AppointmentRepositoryInterface;
 use App\Services\Contracts\AppointmentServiceInterface;
@@ -44,15 +44,15 @@ class AppointmentService implements AppointmentServiceInterface
             ->first();
 
         abort_if(
-            $lastAppointment && $lastAppointment->status === 'booked' ,
+            $lastAppointment && $lastAppointment->status === 'booked',
             422,
             'You cannot book another appointment in this department until your last appointment is completed.'
         );
 
         abort_if(
             $lastAppointment
-                && $lastAppointment->status === 'completed'
-                && $lastAppointment->updated_at->gt(now()->subDay()),
+            && $lastAppointment->status === 'completed'
+            && $lastAppointment->updated_at->gt(now()->subDay()),
             422,
             'You must wait 24 hours after your last completed appointment before booking another appointment.'
         );
@@ -110,6 +110,19 @@ class AppointmentService implements AppointmentServiceInterface
         return $appointment->load(['doctor', 'department.clinic']);
     }
 
+    public function createForClinic(Clinic $clinic, User $user, array $data)
+    {
+        $department = Department::findOrFail($data['dep_id']);
+
+        abort_if(
+            $department->clinic_id !== $clinic->id,
+            403,
+            'This department does not belong to the clinic.'
+        );
+
+        return $this->createForUser($user, $data);
+    }
+
     public function cancelForUser(User $user, Appointment $appointment)
     {
         $this->authorizeUser($user, $appointment);
@@ -142,61 +155,26 @@ class AppointmentService implements AppointmentServiceInterface
 
     public function update(Appointment $appointment, array $data)
     {
-        $shouldRefreshRatings = array_key_exists('rating', $data);
-
         $appointment = $this->appointmentRepository
             ->update($appointment, $data);
-
-        if ($shouldRefreshRatings) {
-            $this->refreshRatingHierarchy($appointment);
-        }
 
         $this->notifyAppointmentUser($appointment, 'appointment_updated', 'Your appointment details have been updated.');
 
         return $appointment;
     }
 
-    private function refreshRatingHierarchy(Appointment $appointment): void
+    public function refreshRatingHierarchy(Appointment $appointment, array $data)
     {
-        $doctorRating = Appointment::query()
-            ->where('doctor_id', $appointment->doctor_id)
-            ->whereNotNull('rating')
-            ->avg('rating');
-
-        Doctor::whereKey($appointment->doctor_id)->update([
-            'rating' => $this->formatRating($doctorRating),
-        ]);
-
-        $departmentRating = DB::table('departments_doctors')
-            ->join('doctors', 'departments_doctors.doctor_id', '=', 'doctors.id')
-            ->where('departments_doctors.department_id', $appointment->dep_id)
-            ->whereNotNull('doctors.rating')
-            ->avg('doctors.rating');
-
-        Department::whereKey($appointment->dep_id)->update([
-            'rating' => $this->formatRating($departmentRating),
-        ]);
-
-        $clinicRating = Department::query()
-            ->where('clinic_id', $appointment->clinic_id)
-            ->whereNotNull('rating')
-            ->avg('rating');
-
-        Clinic::whereKey($appointment->clinic_id)->update([
-            'rating' => $this->formatRating($clinicRating),
-        ]);
-    }
-
-    private function formatRating(mixed $rating): ?float
-    {
-        return $rating === null ? null : round((float) $rating, 2);
+        $appointment = $this->appointmentRepository
+            ->refreshRatingHierarchy($appointment, $data);
+        return $appointment;
     }
 
     private function dispatchAppointmentReminderJob(Appointment $appointment): void
     {
         $reminderAt = $appointment->time?->copy()->subHours(2);
 
-        if (! $reminderAt) {
+        if (!$reminderAt) {
             return;
         }
 
@@ -209,7 +187,7 @@ class AppointmentService implements AppointmentServiceInterface
     {
         $appointment->loadMissing('user');
 
-        if (! $appointment->user) {
+        if (!$appointment->user) {
             return;
         }
 
@@ -230,112 +208,112 @@ class AppointmentService implements AppointmentServiceInterface
         );
     }
 
-    public function getClinicAppointments( int $clinicId, ?string $status = null)
+    public function getClinicAppointments(int $clinicId, ?string $status = null)
     {
-    return $this->appointmentRepository ->paginateForClinic($clinicId, $status);
+        return $this->appointmentRepository->paginateForClinic($clinicId, $status);
     }
 
     public function getAvailableAppointments(
-    int $departmentId,
-    string $date
-): array {
+        int $departmentId,
+        string $date
+    ): array {
 
-    $department = $this->appointmentRepository
-        ->getDepartmentWithClinic($departmentId);
+        $department = $this->appointmentRepository
+            ->getDepartmentWithClinic($departmentId);
 
-    $doctors = $this->appointmentRepository
-        ->getDoctorsByDepartment($departmentId);
+        $doctors = $this->appointmentRepository
+            ->getDoctorsByDepartment($departmentId);
 
-    $bookedAppointments = $this->appointmentRepository
-        ->getBookedAppointments($departmentId, $date);
+        $bookedAppointments = $this->appointmentRepository
+            ->getBookedAppointments($departmentId, $date);
 
-    $clinicStart = Carbon::parse(
-        $department->clinic->start_time
-    );
-
-    $clinicEnd = Carbon::parse(
-        $department->clinic->end_time
-    );
-
-    $bookedByDoctor = $bookedAppointments
-        ->groupBy('doctor_id');
-
-    $result = [];
-
-    foreach ($doctors as $doctor) {
-
-        $doctorStart = Carbon::parse($doctor->start_time);
-        $doctorEnd = Carbon::parse($doctor->end_time);
-
-        
-        $start = $doctorStart->greaterThan($clinicStart)
-            ? $doctorStart
-            : $clinicStart;
-
-        $end = $doctorEnd->lessThan($clinicEnd)
-            ? $doctorEnd
-            : $clinicEnd;
-
-        $allSlots = $this->generateTimeSlots(
-            $start,
-            $end
+        $clinicStart = Carbon::parse(
+            $department->clinic->start_time
         );
 
-    
-       $bookedTimes = collect(
-    $bookedByDoctor->get($doctor->id, [])
-)->map(function ($appointment) {
-
-    $time = Carbon::parse($appointment->time);
-
-    return $time->format('H:00');
-
-})->unique()->values()->toArray();
-
-        
-        $availableTimes = array_values(
-            array_diff(
-                $allSlots,
-                $bookedTimes
-            )
+        $clinicEnd = Carbon::parse(
+            $department->clinic->end_time
         );
 
-        $result[] = [
-            'doctor_id' => $doctor->id,
-            'doctor_name_en' => $doctor->name_en,
-            'doctor_name_ar' => $doctor->name_ar,
+        $bookedByDoctor = $bookedAppointments
+            ->groupBy('doctor_id');
 
-            'working_hours' => [
-                'start' => $start->format('H:i'),
-                'end' => $end->format('H:i'),
-            ],
+        $result = [];
 
-            'available_times' => $availableTimes,
+        foreach ($doctors as $doctor) {
+
+            $doctorStart = Carbon::parse($doctor->start_time);
+            $doctorEnd = Carbon::parse($doctor->end_time);
+
+
+            $start = $doctorStart->greaterThan($clinicStart)
+                ? $doctorStart
+                : $clinicStart;
+
+            $end = $doctorEnd->lessThan($clinicEnd)
+                ? $doctorEnd
+                : $clinicEnd;
+
+            $allSlots = $this->generateTimeSlots(
+                $start,
+                $end
+            );
+
+
+            $bookedTimes = collect(
+                $bookedByDoctor->get($doctor->id, [])
+            )->map(function ($appointment) {
+
+                $time = Carbon::parse($appointment->time);
+
+                return $time->format('H:00');
+
+            })->unique()->values()->toArray();
+
+
+            $availableTimes = array_values(
+                array_diff(
+                    $allSlots,
+                    $bookedTimes
+                )
+            );
+
+            $result[] = [
+                'doctor_id' => $doctor->id,
+                'doctor_name_en' => $doctor->name_en,
+                'doctor_name_ar' => $doctor->name_ar,
+
+                'working_hours' => [
+                    'start' => $start->format('H:i'),
+                    'end' => $end->format('H:i'),
+                ],
+
+                'available_times' => $availableTimes,
+            ];
+        }
+
+        return [
+            'department_id' => $departmentId,
+            'date' => $date,
+            'doctors' => $result,
         ];
     }
+    private function generateTimeSlots(
+        Carbon $start,
+        Carbon $end
+    ): array {
 
-    return [
-        'department_id' => $departmentId,
-        'date' => $date,
-        'doctors' => $result,
-    ];
-}
-private function generateTimeSlots(
-    Carbon $start,
-    Carbon $end
-): array {
+        $slots = [];
 
-    $slots = [];
+        $current = $start->copy();
 
-    $current = $start->copy();
+        while ($current < $end) {
 
-    while ($current < $end) {
+            $slots[] = $current->format('H:i');
 
-        $slots[] = $current->format('H:i');
+            $current->addHour();
+        }
 
-        $current->addHour();
+        return $slots;
     }
-
-    return $slots;
-}
 }

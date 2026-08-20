@@ -60,7 +60,11 @@ Route::prefix('appointments')->controller(AppointmentController::class)->group(f
     Route::post('/{appointment}/cancel', 'cancel');
     Route::post('/{appointment}/complete', 'complete');
     Route::put('/{appointment}', 'update');
+    Route::put('/{appointment}/refresh-ratings', 'refreshRatingHierarchy');
 });
+
+Route::post('/clinics/appointments', [AppointmentController::class, 'store'])
+    ->middleware('auth:clinic-api');
 
 Route::get('/departments/{departmentId}/available', [AppointmentController::class, 'available']);
 
@@ -91,7 +95,7 @@ Route::prefix('clinics/departments')->controller(DepartmentController::class)->g
     Route::get('/{id}', 'show');
     Route::post('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
-    
+
 });
 Route::get(
     '/clinics/{clinicId}/departments/{departmentId}/statistics',

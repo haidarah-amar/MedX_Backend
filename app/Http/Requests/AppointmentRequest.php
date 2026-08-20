@@ -23,6 +23,7 @@ class AppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'nullable|exists:users,id',
             'doctor_id' => 'required|exists:doctors,id',
             'dep_id' => 'required|exists:departments,id',
             'date' => 'required|date',

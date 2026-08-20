@@ -3,6 +3,7 @@
 namespace App\Services\Contracts;
 
 use App\Models\Appointment;
+use App\Models\Clinic;
 use App\Models\User;
 
 interface AppointmentServiceInterface
@@ -13,6 +14,8 @@ interface AppointmentServiceInterface
 
     public function createForUser(User $user, array $data);
 
+    public function createForClinic(Clinic $clinic, User $user, array $data);
+
     public function cancelForUser(User $user, Appointment $appointment);
 
     public function complete(Appointment $appointment, array $data);
@@ -22,5 +25,7 @@ interface AppointmentServiceInterface
     public function getClinicAppointments(int $clinicId, ?string $status = null);
 
     public function getAvailableAppointments(int $departmentId, string $date): array;
+
+    public function refreshRatingHierarchy(Appointment $appointment, array $data);
 
 }

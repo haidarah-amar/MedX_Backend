@@ -8,39 +8,55 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->decimal('rating', 3, 2)->nullable()->after('doctor_notes');
-        });
+        if (!Schema::hasColumn('appointments', 'rating')) {
+            Schema::table('appointments', function (Blueprint $table) {
+                $table->decimal('rating', 3, 2)->nullable();
+            });
+        }
 
-        Schema::table('doctors', function (Blueprint $table) {
-            $table->decimal('rating', 3, 2)->nullable()->after('working_hours');
-        });
+        if (!Schema::hasColumn('doctors', 'rating')) {
+            Schema::table('doctors', function (Blueprint $table) {
+                $table->decimal('rating', 3, 2)->nullable();
+            });
+        }
 
-        Schema::table('departments', function (Blueprint $table) {
-            $table->decimal('rating', 3, 2)->nullable()->after('location_en');
-        });
+        if (!Schema::hasColumn('departments', 'rating')) {
+            Schema::table('departments', function (Blueprint $table) {
+                $table->decimal('rating', 3, 2)->nullable();
+            });
+        }
 
-        Schema::table('clinics', function (Blueprint $table) {
-            $table->decimal('rating', 3, 2)->nullable()->after('percentage');
-        });
+        if (!Schema::hasColumn('clinics', 'rating')) {
+            Schema::table('clinics', function (Blueprint $table) {
+                $table->decimal('rating', 3, 2)->nullable();
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->dropColumn('rating');
-        });
+        if (Schema::hasColumn('appointments', 'rating')) {
+            Schema::table('appointments', function (Blueprint $table) {
+                $table->dropColumn('rating');
+            });
+        }
 
-        Schema::table('doctors', function (Blueprint $table) {
-            $table->dropColumn('rating');
-        });
+        if (Schema::hasColumn('doctors', 'rating')) {
+            Schema::table('doctors', function (Blueprint $table) {
+                $table->dropColumn('rating');
+            });
+        }
 
-        Schema::table('departments', function (Blueprint $table) {
-            $table->dropColumn('rating');
-        });
+        if (Schema::hasColumn('departments', 'rating')) {
+            Schema::table('departments', function (Blueprint $table) {
+                $table->dropColumn('rating');
+            });
+        }
 
-        Schema::table('clinics', function (Blueprint $table) {
-            $table->dropColumn('rating');
-        });
+        if (Schema::hasColumn('clinics', 'rating')) {
+            Schema::table('clinics', function (Blueprint $table) {
+                $table->dropColumn('rating');
+            });
+        }
     }
 };

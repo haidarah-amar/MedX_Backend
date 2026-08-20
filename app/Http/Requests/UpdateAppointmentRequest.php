@@ -17,7 +17,7 @@ class UpdateAppointmentRequest extends FormRequest
     {
         return [
             'user_notes' => 'sometimes|string|max:255',
-            'rating' => 'sometimes|nullable|numeric|min:1|max:5',
+            'rating' => 'required|numeric|min:1|max:5',
         ];
     }
 }

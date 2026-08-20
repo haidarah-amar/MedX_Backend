@@ -20,4 +20,6 @@ interface AppointmentRepositoryInterface
     public function getDepartmentWithClinic(int $departmentId);
     public function getDoctorsByDepartment(int $departmentId);
     public function getBookedAppointments(int $departmentId, string $date);
+
+    public function refreshRatingHierarchy(Appointment $appointment, array $data);
 }

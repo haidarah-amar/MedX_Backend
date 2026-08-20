@@ -23,14 +23,14 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'first_name' => 'sometimes|string|max:255',
+            'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $this->user()->id,
             'phone_number' => 'nullable|string|max:15',
             'gender' => 'nullable|in:female,male',
             'birthdate' => 'nullable|date',
             'address' => 'nullable|string|max:255',
-            'id_passport' => 'nullable|string|max:255',
+            'id_passport' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'password' => 'sometimes|string|min:8|confirmed',
         ];
     }

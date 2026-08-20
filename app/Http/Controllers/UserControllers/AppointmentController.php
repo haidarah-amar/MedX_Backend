@@ -47,7 +47,7 @@ class AppointmentController extends Controller
                 $request->status
             )
         );
-    
+
 
     // return response()->json([
     //     'message' => 'Invalid account type.'
@@ -63,8 +63,27 @@ class AppointmentController extends Controller
 
     public function store(AppointmentRequest $request)
     {
+        $payload = JWTAuth::parseToken()->getPayload();
+
+        if ($payload->get('account_type') === 'clinic') {
+            $clinic = Clinic::findOrFail((int) $payload->get('sub'));
+            $data = $request->validated();
+
+            abort_if(!isset($data['user_id']), 422, 'user_id is required when a clinic creates an appointment.');
+
+            $user = User::findOrFail($data['user_id']);
+
+            $appointment = $this->appointmentService->createForClinic(
+                $clinic,
+                $user,
+                $data
+            );
+
+            return response()->json($appointment, 201);
+        }
+
         $appointment = $this->appointmentService->createForUser(
-            $request->user(),
+            JWTAuth::parseToken()->authenticate(),
             $request->validated()
         );
 
@@ -130,6 +149,17 @@ class AppointmentController extends Controller
         return response()->json([
             'success' => true,
             'data' => $data
+        ]);
+    }
+    public function refreshRatingHierarchy(UpdateAppointmentRequest $request, Appointment $appointment)
+    {
+        $this->appointmentService->refreshRatingHierarchy(
+            $appointment,
+            $request->validated()
+        );
+
+        return response()->json([
+            'message' => 'تم تحديث التقييمات بنجاح',
         ]);
     }
 }
