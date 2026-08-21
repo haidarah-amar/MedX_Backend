@@ -14,6 +14,8 @@ class StoreDepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name_en' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'name_ar' => 'required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',
             'category_id' => 'required|exists:departments_categories,id',
             'description_en' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'description_ar' => 'required|string|max:255|regex:/^[\p{Arabic}\s]+$/u',

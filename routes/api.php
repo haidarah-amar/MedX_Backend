@@ -56,13 +56,13 @@ Route::prefix('admin')->group(function () {
 
 Route::prefix('appointments')->controller(AppointmentController::class)->group(function () {
     Route::get('/', 'index');
-
+    Route::post('/{appointment}/cancel', 'cancel');
+       
     Route::post('/{appointment}/complete', 'complete')->middleware('auth:clinic-api');
     
     Route::middleware('auth:api')->group(function () {
        Route::post('/', 'store');
        Route::get('/{appointment}', 'show');
-       Route::post('/{appointment}/cancel', 'cancel');
        Route::put('/{appointment}', 'update');
        Route::put('/{appointment}/refresh-ratings', 'refreshRatingHierarchy');
 

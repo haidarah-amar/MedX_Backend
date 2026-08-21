@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('dep_id');
             $table->unsignedBigInteger('clinic_id');
             $table->date('date');
-            $table->timestamp('time');
+            $table->time('time');
             $table->double('appointment_fee', 6, 2);
             $table->decimal('doctor_cost', 6, 2)->nullable();
             $table->boolean('is_asap')->default(false);

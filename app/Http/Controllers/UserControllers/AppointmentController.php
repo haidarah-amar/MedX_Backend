@@ -92,10 +92,36 @@ class AppointmentController extends Controller
 
     public function cancel(Request $request, Appointment $appointment)
     {
-        $appointment = $this->appointmentService->cancelForUser($request->user(), $appointment);
+        $payload = JWTAuth::parseToken()->getPayload();
 
-        return response()->json($appointment);
+    $accountType = $payload->get('account_type');
+
+    if ($accountType === 'clinic') {
+        $clinicId = (int) $payload->get('sub');
+
+        if ($appointment->clinic_id !== $clinicId) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+        $appointment = $this->appointmentService->cancelForUser(User::findOrFail($appointment->user_id), $appointment);
+        return response()->json([
+            'message' => 'تم إلغاء الموعد بنجاح',
+            'data' => $appointment
+        ], 200);
     }
+
+    elseif ($accountType === 'user') {
+        $appointment = $this->appointmentService->cancelForUser(User::findOrFail($appointment->user_id), $appointment);
+
+        return response()->json([
+            'message' => 'تم إلغاء الموعد بنجاح',
+            'data' => $appointment
+        ], 200);
+    }
+    else {
+        return response()->json(['message' => 'Forbidden.'], 403);
+    }
+    }
+
 
     // Doctor/Admin: add doctor notes and complete
     public function complete(Request $request, Appointment $appointment)
