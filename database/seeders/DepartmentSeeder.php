@@ -16,6 +16,9 @@ class DepartmentSeeder extends Seeder
                 'clinic_email' => 'damascus@medx.sy',
                 'category' => 'internal_medicine',
 
+                'name_en' => 'Internal Medicine',
+                'name_ar' => 'الباطنية',
+
                 'description_en' =>
                     'The Internal Medicine Department provides diagnosis and follow-up for common adult medical conditions.',
 
@@ -33,6 +36,9 @@ class DepartmentSeeder extends Seeder
                 'clinic_email' => 'damascus@medx.sy',
                 'category' => 'pediatrics',
 
+                'name_en' => 'Pediatrics',
+                'name_ar' => 'الأطفال',
+
                 'description_en' =>
                     'The Pediatrics Department provides medical care and follow-up for infants, children, and adolescents.',
 
@@ -49,6 +55,9 @@ class DepartmentSeeder extends Seeder
             [
                 'clinic_email' => 'damascus@medx.sy',
                 'category' => 'dermatology',
+
+                'name_en' => 'Dermatology',
+                'name_ar' => 'الجلدية',
 
                 'description_en' =>
                     'The Dermatology Department diagnoses and treats common skin, hair, and nail conditions.',
@@ -69,6 +78,9 @@ class DepartmentSeeder extends Seeder
                 'clinic_email' => 'aleppo@medx.sy',
                 'category' => 'cardiology',
 
+                'name_en' => 'Cardiology',
+                'name_ar' => 'القلبية',
+
                 'description_en' =>
                     'The Cardiology Department provides evaluation and follow-up for heart and blood vessel conditions.',
 
@@ -85,6 +97,9 @@ class DepartmentSeeder extends Seeder
             [
                 'clinic_email' => 'aleppo@medx.sy',
                 'category' => 'orthopedics',
+
+                'name_en' => 'Orthopedics',
+                'name_ar' => 'العظام',
 
                 'description_en' =>
                     'The Orthopedics Department treats bone, joint, muscle, and movement-related conditions.',
@@ -103,6 +118,8 @@ class DepartmentSeeder extends Seeder
                 'clinic_email' => 'aleppo@medx.sy',
                 'category' => 'ent',
 
+            'name_en' => 'ENT',
+                'name_ar' => 'الأنف والأذن والحنجرة',
                 'description_en' =>
                     'The ENT Department provides diagnosis and treatment for ear, nose, and throat conditions.',
 
@@ -121,6 +138,8 @@ class DepartmentSeeder extends Seeder
             [
                 'clinic_email' => 'latakia@medx.sy',
                 'category' => 'gynecology',
+                'name_en' => 'Gynecology',
+                'name_ar' => 'النسائية',
 
                 'description_en' =>
                     'The Gynecology Department provides consultation and follow-up for women’s health conditions.',
@@ -139,6 +158,9 @@ class DepartmentSeeder extends Seeder
                 'clinic_email' => 'latakia@medx.sy',
                 'category' => 'ophthalmology',
 
+                'name_en' => 'Ophthalmology',
+                'name_ar' => 'العيون',
+
                 'description_en' =>
                     'The Ophthalmology Department provides eye examinations and treatment for common vision conditions.',
 
@@ -155,6 +177,9 @@ class DepartmentSeeder extends Seeder
             [
                 'clinic_email' => 'latakia@medx.sy',
                 'category' => 'dentistry_general',
+
+                'name_en' => 'General Dentistry',
+                'name_ar' => 'الأسنان العامة',
 
                 'description_en' =>
                     'The General Dentistry Department provides preventive care, examinations, and treatment for common dental conditions.',
@@ -187,6 +212,8 @@ class DepartmentSeeder extends Seeder
                     'category_id' => $category->id,
                 ],
                 [
+                    'name_en' => $data['name_en'],
+                    'name_ar' => $data['name_ar'],
                     'description_en' => $data['description_en'],
                     'description_ar' => $data['description_ar'],
                     'location_ar' => $data['location_ar'],

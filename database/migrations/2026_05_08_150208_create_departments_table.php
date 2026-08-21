@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('clinic_id')->constrained('clinics')->cascadeOnDelete(); 
             $table->foreignId('category_id')->constrained('departments_categories')->cascadeOnDelete();
+            $table->string('name_en');
+            $table->string('name_ar');
             $table->string('description_en');
             $table->string('description_ar');
             $table->string('location_ar');
