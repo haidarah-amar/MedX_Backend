@@ -16,7 +16,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function findByEmail(string $email)
     {
-        return User::where('email', $email)->first();
+        return User::whereEmail($email)->first();
     }
 
     public function all()
@@ -49,7 +49,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function login(array $credentials)
     {
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::whereEmail($credentials['email'])->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return null;

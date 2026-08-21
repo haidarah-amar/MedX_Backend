@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -18,11 +19,18 @@ class User extends Authenticatable implements JWTSubject
 
     public const ROLE_SUPER_ADMIN = 'super_admin';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $appends = [
+    'id_passport_url',
+];
+
+public function getIdPassportUrlAttribute()
+{
+    if (!$this->id_passport) {
+        return null;
+    }
+
+    return Storage::disk('public')->url($this->id_passport);
+}
     protected $fillable = [
 
         'first_name',

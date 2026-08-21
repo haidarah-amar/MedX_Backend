@@ -5,6 +5,7 @@ use App\Http\Controllers\ClinicControllers\ClinicController;
 use App\Http\Controllers\ClinicControllers\DepartmentController;
 use App\Http\Controllers\ClinicControllers\DoctorController;
 use App\Http\Controllers\ClinicControllers\DocumentController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FinancialControllers\FinancialDashboardController;
 use App\Http\Controllers\FinancialControllers\FinancialExportController;
 use App\Http\Controllers\FinancialControllers\FinancialTrendController;
