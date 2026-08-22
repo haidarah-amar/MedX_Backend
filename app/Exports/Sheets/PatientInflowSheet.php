@@ -14,7 +14,6 @@ class PatientInflowSheet implements
     WithTitle,
     ShouldAutoSize
 {
-    // إضافة المتغير الرابع لاستقبال الـ departmentId
     public function __construct(
         private int $clinicId,
         private ?string $from,

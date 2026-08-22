@@ -96,7 +96,15 @@ class AppointmentController extends Controller
 
     $accountType = $payload->get('account_type');
 
-    if ($accountType === 'clinic') {
+    if ($accountType === 'user') {
+        $appointment = $this->appointmentService->cancelForUser(User::findOrFail($appointment->user_id), $appointment);
+
+        return response()->json([
+            'message' => 'تم إلغاء الموعد بنجاح',
+            'data' => $appointment
+        ], 200);
+    }
+    elseif ($accountType === 'clinic') {
         $clinicId = (int) $payload->get('sub');
 
         if ($appointment->clinic_id !== $clinicId) {
@@ -109,14 +117,7 @@ class AppointmentController extends Controller
         ], 200);
     }
 
-    elseif ($accountType === 'user') {
-        $appointment = $this->appointmentService->cancelForUser(User::findOrFail($appointment->user_id), $appointment);
-
-        return response()->json([
-            'message' => 'تم إلغاء الموعد بنجاح',
-            'data' => $appointment
-        ], 200);
-    }
+    
     else {
         return response()->json(['message' => 'Forbidden.'], 403);
     }
