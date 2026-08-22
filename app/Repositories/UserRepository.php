@@ -55,7 +55,8 @@ class UserRepository implements UserRepositoryInterface
             return null;
         }
 
-        $token = JWTAuth::fromUser($user);
+        // $token = JWTAuth::fromUser($user);
+        $token = JWTAuth::claims(['account_type' => 'user',])->fromUser($user);
 
         return [
             'token' => $token,
